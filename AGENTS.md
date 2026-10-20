@@ -59,6 +59,13 @@ La evolución del algoritmo debe poder explicarse y medirse con ejemplos.
 
 - Usa `uv run` para ejecutar Python en el entorno del proyecto.
 - Tras cambios, ejecuta `make format`, `make lint` y `make test`.
+- Al hacer commit, confía en los hooks instalados para comprobar el lock, el
+  formato y el lint; no ejecutes antes `make format` y `make lint` salvo que
+  necesites diagnosticar o corregir un fallo.
+- Antes de una pull request, release, merge o cambio de riesgo, ejecuta la
+  batería completa con `make format`, `make lint` y `make test`.
+- Si no se va a crear un commit, ejecuta manualmente las comprobaciones
+  relevantes antes de dar el trabajo por terminado.
 - Tras modificar un workflow de GitHub Actions, si `act` está instalado, ejecuta localmente el workflow afectado y comprueba que finaliza correctamente.
 - Para cambios de ejemplos, ejecuta una comprobación específica del ejemplo,
   además de las pruebas pertinentes.
