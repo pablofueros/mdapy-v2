@@ -91,6 +91,26 @@ Distances are Euclidean after normalizing each variable by its standard
 deviation. Directional variables use the shortest angular distance and a
 circular standard deviation. Exact ties preserve input order.
 
+## Performance
+
+The benchmark suite preserves one numerical reference for each significant
+algorithm evolution, using its latest available patch. Reference cases verify
+the exact selected indices before any timing is recorded.
+
+Version 2.1 replaced repeated subset scans and a growing pair cache with
+incremental minimum distances. In the documented `datawave` experiment with
+20 selections, the complete call decreased from 32.63 seconds to 0.086 seconds
+and peak RSS from 507 MiB to 118 MiB. These figures describe one environment
+and workload, not a universal speedup.
+
+See the complete protocol, limitations, and raw measurements in the
+[benchmark results](benchmarks/RESULTS.md).
+
+```bash
+uv run benchmarks/run.py --check
+uv run benchmarks/run.py
+```
+
 ## Examples
 
 Start with the [minimal selection](examples/1_mda_minimal.py), a one-dimensional

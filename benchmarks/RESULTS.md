@@ -38,10 +38,10 @@ y un límite de 180 segundos por proceso.
 
 ```bash
 uv run benchmarks/run.py --counts 5 10 20 --runs 5 --timeout 180 \
-  --output benchmarks/results/v2_0-v2_1-2026-10-20
+  --output benchmarks/results/v2_0-v2_1
 ```
 
-[Datos brutos de la campaña](results/v2_0-v2_1-2026-10-20/)
+[Datos brutos de la campaña](results/v2_0-v2_1/)
 
 `Preparación` incluye conversiones o copias, desviaciones y matriz de trabajo.
 `Selección` comienza con esos datos preparados. `Llamada` suma ambos tiempos;
