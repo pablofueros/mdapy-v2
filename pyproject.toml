@@ -1,7 +1,7 @@
 [project]
 name = "mdapy-v2"
 version = "2.1.0"
-description = "Maximum Dissimilarity Algorithm in Python"
+description = "FAST Maximum Dissimilarity Algorithm in Python"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

@@ -4,7 +4,7 @@
 
 ---
 
-### **✨ Maximum Dissimilarity Algorithm in Python✨**
+### ⚡ **FAST Maximum Dissimilarity Algorithm in Python** ⚡
 
 [![Code Quality](https://github.com/pablofueros/mdapy-v2/actions/workflows/code-quality.yml/badge.svg)](https://github.com/pablofueros/mdapy-v2/actions/workflows/code-quality.yml)
 [![Coverage](https://codecov.io/gh/pablofueros/mdapy-v2/graph/badge.svg?branch=main)](https://codecov.io/gh/pablofueros/mdapy-v2)
@@ -14,6 +14,9 @@
 [![License](https://img.shields.io/github/license/pablofueros/mdapy-v2.svg)](https://github.com/pablofueros/mdapy-v2/blob/main/LICENSE)
 
 ---
+
+[![mdapy-v2 completes the benchmark in 0.086 seconds compared with 32.63
+seconds for ihc-mdapy](assets/performance/v2_0-v2_1.svg)](#performance)
 
 </div>
 
@@ -29,10 +32,10 @@ public API, correctness checks, examples, and performance of the algorithm.
 
 ## Installation
 
-`mdapy-v2` requires Python 3.12 or newer.
+`mdapy-v2` requires Python 3.12 or newer. `uv` is also recommended.
 
 ```bash
-pip install mdapy-v2
+uv pip install mdapy-v2
 ```
 
 The distribution name changed, but the import remains short and familiar:
@@ -96,6 +99,10 @@ circular standard deviation. Exact ties preserve input order.
 The benchmark suite preserves one numerical reference for each significant
 algorithm evolution, using its latest available patch. Reference cases verify
 the exact selected indices before any timing is recorded.
+
+For readability, the chart labels the preserved 2.0 reference as `ihc-mdapy`:
+it uses the same selection algorithm as the latest published `ihc-mdapy`
+release, adapted to the current API for a controlled comparison.
 
 Version 2.1 replaced repeated subset scans and a growing pair cache with
 incremental minimum distances. In the documented `datawave` experiment with
