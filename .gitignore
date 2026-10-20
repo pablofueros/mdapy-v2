@@ -1,4 +1,3 @@
-benchmarks/results/
 .venv/
 __pycache__/
 *.py[cod]

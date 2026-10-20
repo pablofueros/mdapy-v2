@@ -36,6 +36,13 @@ Se utilizaron las 140.256 filas de `datawave.npz`, las variables `hs`, `tp` y
 Se midieron 5, 10 y 20 selecciones, con cinco procesos independientes por carga
 y un límite de 180 segundos por proceso.
 
+```bash
+uv run benchmarks/run.py --counts 5 10 20 --runs 5 --timeout 180 \
+  --output benchmarks/results/v2_0-v2_1-2026-10-20
+```
+
+[Datos brutos de la campaña](results/v2_0-v2_1-2026-10-20/)
+
 `Preparación` incluye conversiones o copias, desviaciones y matriz de trabajo.
 `Selección` comienza con esos datos preparados. `Llamada` suma ambos tiempos;
 `proceso` incluye además arranque, imports y carga. El RSS corresponde al

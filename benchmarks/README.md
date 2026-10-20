@@ -10,7 +10,7 @@ se añade cuando existe una evolución publicada que merece ser comparada.
 - `cases.json` fija los índices esperados para cada referencia.
 - `run.py` valida los casos y ejecuta las mediciones.
 - `RESULTS.md` reúne las comparaciones interpretadas.
-- `results/` contiene los datos brutos locales y está ignorado por Git.
+- `results/` conserva los datos brutos de las campañas documentadas.
 
 Git conserva las revisiones anteriores. Si aparece un parche posterior de una
 serie, se actualiza su única referencia en lugar de añadir otra copia.
@@ -44,6 +44,13 @@ Ejecutar una exploración con cargas distintas:
 uv run benchmarks/run.py --counts 5 10 --runs 2 --timeout 60
 ```
 
-Cada campaña usa un directorio nuevo dentro de `results/`. Después de revisar
-los datos brutos, sus conclusiones se añaden como una entrada autocontenida en
-`RESULTS.md`.
+El runner crea por defecto un directorio con fecha y hora. Para dar un nombre
+estable a una campaña se puede indicar su destino:
+
+```bash
+uv run benchmarks/run.py --output benchmarks/results/v2_1-v2_2-AAAA-MM-DD
+```
+
+Solo se versionan los directorios que respaldan una entrada de `RESULTS.md`;
+las ejecuciones exploratorias se eliminan después de revisarlas. Cada entrada
+incluye el comando utilizado y enlaza sus datos brutos.

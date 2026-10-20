@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-10-20T15:16:17.847234+00:00",
+  "python": "3.12.3",
+  "numpy": "1.26.0",
+  "scipy": "1.15.1",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+  "machine": "aarch64",
+  "cpu_count": 12,
+  "dataset": "examples/data/datawave.npz",
+  "dataset_sha256": "f90a405168601acaff280b46997280180eb03b91e72c4cf60450bb533daae354",
+  "algorithms": {
+    "v2_0": {
+      "file": "v2_0.py",
+      "sha256": "42287b065972bc36920279cf81a78ed0dfb6e90b996d6919b128a49bf5c408a2"
+    },
+    "v2_1": {
+      "file": "v2_1.py",
+      "sha256": "e04933bda8b41f31b07261791287bef9ffc1cd0534793c035e689a5b1ae2f813"
+    }
+  },
+  "counts": [
+    5,
+    10,
+    20
+  ],
+  "runs": 5,
+  "timeout_s": 180
+}
