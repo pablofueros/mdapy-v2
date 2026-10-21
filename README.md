@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/banner.png" alt="mdapy logo" width="500"/>
+<img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/banner.png" alt="mdapy logo" width="700"/>
 
 ---
 
