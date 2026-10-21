@@ -32,7 +32,7 @@ public API, correctness checks, examples, and performance of the algorithm.
 
 ## Installation
 
-`mdapy-v2` requires Python 3.12 or newer. `uv` is also recommended.
+`mdapy-v2` requires Python 3.12 or newer. [`uv`](https://docs.astral.sh/uv/) is also recommended.
 
 ```bash
 uv pip install mdapy-v2
