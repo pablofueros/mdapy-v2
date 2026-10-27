@@ -24,7 +24,7 @@ DATA = ROOT.parent / "examples/data/datawave.npz"
 ALGORITHMS = ("v2_1", "v2_2")
 RANDOM_SEED = 20261020
 
-WORKLOADS: dict[str, dict[str, Any]] = {
+SCALING_WORKLOADS: dict[str, dict[str, Any]] = {
     "datawave-k5": {"dataset": "datawave", "selections": 5},
     "datawave-k20": {"dataset": "datawave", "selections": 20},
     "datawave-k100": {"dataset": "datawave", "selections": 100},
@@ -64,6 +64,59 @@ WORKLOADS: dict[str, dict[str, Any]] = {
         "selections": 20,
         "directional": 3,
     },
+}
+
+GROUNDED_WORKLOADS: dict[str, dict[str, Any]] = {
+    "grounded-datawave-k20": {
+        "dataset": "datawave",
+        "selections": 20,
+    },
+    "grounded-datawave-k100": {
+        "dataset": "datawave",
+        "selections": 100,
+    },
+    "grounded-franklin-k600": {
+        "rows": 87_664,
+        "columns": 3,
+        "selections": 600,
+    },
+    "grounded-castro-k100": {
+        "rows": 121_968,
+        "columns": 3,
+        "selections": 100,
+    },
+    "grounded-castro-k1000": {
+        "rows": 121_968,
+        "columns": 3,
+        "selections": 1_000,
+    },
+    "grounded-castro-k5000": {
+        "rows": 121_968,
+        "columns": 3,
+        "selections": 5_000,
+    },
+    "grounded-ncsu-k1250": {
+        "rows": 1_000_000,
+        "columns": 3,
+        "selections": 1_250,
+    },
+    "grounded-tudelft-k1000": {
+        "rows": 10_000,
+        "columns": 3,
+        "selections": 1_000,
+    },
+    "grounded-directional-k600": {
+        "rows": 87_664,
+        "columns": 3,
+        "selections": 600,
+        "directional": 1,
+    },
+}
+
+WORKLOADS = SCALING_WORKLOADS | GROUNDED_WORKLOADS
+SUITES = {
+    "scaling": SCALING_WORKLOADS,
+    "grounded": GROUNDED_WORKLOADS,
 }
 
 
@@ -175,11 +228,20 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
                 "peak_median_mib": median(
                     float(record["peak_mib"]) for record in selected
                 ),
+                "selection_min_s": min(
+                    float(record["selection_s"]) for record in selected
+                ),
+                "selection_max_s": max(
+                    float(record["selection_s"]) for record in selected
+                ),
             }
         baseline = entries["v2_1"]
         candidate = entries["v2_2"]
         entries["selection_speedup"] = (
             baseline["selection_median_s"] / candidate["selection_median_s"]
+        )
+        entries["selection_saved_s"] = (
+            baseline["selection_median_s"] - candidate["selection_median_s"]
         )
         entries["call_speedup"] = baseline["call_median_s"] / candidate["call_median_s"]
         entries["peak_change_percent"] = (
@@ -193,11 +255,14 @@ def benchmark(args: argparse.Namespace) -> Path:
     from run import validate
 
     validate()
+    suite_workloads = SUITES[args.suite]
     output = Path(args.output).resolve()
     output.mkdir(parents=True, exist_ok=True)
     if any(output.iterdir()):
         raise ValueError("Choose an empty output directory")
-    workloads = args.workloads or list(WORKLOADS)
+    workloads = args.workloads or list(suite_workloads)
+    if any(name not in suite_workloads for name in workloads):
+        raise ValueError(f"Choose workloads from the {args.suite!r} suite")
     metadata = {
         "created_at": datetime.now(UTC).isoformat(),
         "python": platform.python_version(),
@@ -207,6 +272,7 @@ def benchmark(args: argparse.Namespace) -> Path:
         "machine": platform.machine(),
         "cpu_count": os.cpu_count(),
         "random_seed": RANDOM_SEED,
+        "suite": args.suite,
         "workloads": {name: WORKLOADS[name] for name in workloads},
         "runs": args.runs,
         "timeout_s": args.timeout,
@@ -225,8 +291,8 @@ def benchmark(args: argparse.Namespace) -> Path:
     for workload_name in workloads:
         expected = None
         for run_number in range(1, args.runs + 1):
-            algorithms = ALGORITHMS if run_number % 2 else tuple(reversed(ALGORITHMS))
-            for algorithm_name in algorithms:
+            ordered = ALGORITHMS if run_number % 2 else tuple(reversed(ALGORITHMS))
+            for algorithm_name in ordered:
                 started = perf_counter()
                 completed = subprocess.run(
                     [
@@ -264,6 +330,7 @@ def benchmark(args: argparse.Namespace) -> Path:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--suite", choices=SUITES, default="scaling")
     parser.add_argument("--runs", type=int, default=7)
     parser.add_argument("--timeout", type=float, default=180)
     parser.add_argument("--workloads", nargs="+", choices=WORKLOADS)

@@ -1,8 +1,8 @@
 """Numerical reference for the Python/NumPy evolution planned for mdapy 2.2.
 
-Source: working tree on ``perf-2.2-python-numpy``. Preparation preserves the
-2.1 calculations. Selection reuses working buffers and compares squared
-distances for real inputs; complex inputs retain NumPy's norm reduction.
+Source: working tree on ``perf/python-numpy-optimization``. Preparation
+preserves the 2.1 calculations. Selection reuses working buffers and compares
+squared distances.
 """
 
 from dataclasses import dataclass
@@ -11,13 +11,13 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import circstd
 
-SOURCE = "perf-2.2-python-numpy"
+SOURCE = "perf/python-numpy-optimization"
 
 
 @dataclass
 class PreparedData:
     data: NDArray
-    deviations: list[float]
+    deviations: NDArray
     directional: list[int]
 
 
@@ -26,15 +26,23 @@ def prepare(columns: tuple[NDArray, ...], directional: list[int]) -> PreparedDat
     copied = tuple(np.asarray(column).copy() for column in columns)
     if any(not np.isfinite(column).all() for column in copied):
         raise ValueError("Columns must contain only finite values")
-    deviations = [
-        float(circstd(column, high=360, low=0))
-        if index in directional
-        else float(np.std(column))
-        for index, column in enumerate(copied)
-    ]
+    deviations = np.asarray(
+        [
+            float(circstd(column, high=360, low=0))
+            if index in directional
+            else float(np.std(column))
+            for index, column in enumerate(copied)
+        ]
+    )
     if any(not np.isfinite(value) or value <= 0 for value in deviations):
         raise ValueError("Columns must have a finite, positive deviation")
     return PreparedData(np.column_stack(copied), deviations, directional)
+
+
+def _squared_row_norms(values: NDArray) -> NDArray:
+    """Return the squared Euclidean norm of each row."""
+    # "ij,ij->i" multiplies each row by itself and sums its columns.
+    return np.einsum("ij,ij->i", values, values)
 
 
 def select(
@@ -48,11 +56,9 @@ def select(
     if n_clusters == 1:
         return prepared.data[indices], indices
     differences = np.empty_like(prepared.data)
-    normalized = np.empty(
-        prepared.data.shape,
-        dtype=np.result_type(
-            prepared.data.dtype, np.asarray(prepared.deviations).dtype
-        ),
+    normalized = np.empty_like(
+        prepared.data,
+        dtype=np.result_type(prepared.data.dtype, prepared.deviations.dtype),
     )
 
     while len(indices) < n_clusters:
@@ -60,10 +66,7 @@ def select(
         for column in prepared.directional:
             differences[:, column] = (differences[:, column] + 180) % 360 - 180
         np.divide(differences, prepared.deviations, out=normalized)
-        if np.iscomplexobj(normalized):
-            distances = np.linalg.norm(normalized, axis=1)
-        else:
-            distances = np.einsum("ij,ij->i", normalized, normalized)
+        distances = _squared_row_norms(normalized)
         np.minimum(nearest, distances, out=nearest)
         nearest[selected] = -np.inf
         next_index = int(np.argmax(nearest))
