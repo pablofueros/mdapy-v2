@@ -1,4 +1,4 @@
-"""Measure 2.1 and the planned 2.2 NumPy core across scaling workloads."""
+"""Measure mdapy 2.1 and 2.2 across scaling workloads."""
 
 import argparse
 import hashlib
@@ -236,16 +236,18 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
                 ),
             }
         baseline = entries["v2_1"]
-        candidate = entries["v2_2"]
+        version_2_2 = entries["v2_2"]
         entries["selection_speedup"] = (
-            baseline["selection_median_s"] / candidate["selection_median_s"]
+            baseline["selection_median_s"] / version_2_2["selection_median_s"]
         )
         entries["selection_saved_s"] = (
-            baseline["selection_median_s"] - candidate["selection_median_s"]
+            baseline["selection_median_s"] - version_2_2["selection_median_s"]
         )
-        entries["call_speedup"] = baseline["call_median_s"] / candidate["call_median_s"]
+        entries["call_speedup"] = (
+            baseline["call_median_s"] / version_2_2["call_median_s"]
+        )
         entries["peak_change_percent"] = (
-            (candidate["peak_median_mib"] / baseline["peak_median_mib"]) - 1
+            (version_2_2["peak_median_mib"] / baseline["peak_median_mib"]) - 1
         ) * 100
         summary[workload_name] = entries
     return summary

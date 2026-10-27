@@ -1,8 +1,7 @@
-"""Numerical reference for the Python/NumPy evolution planned for mdapy 2.2.
+"""Numerical reference for mdapy 2.2.
 
-Source: working tree on ``perf/python-numpy-optimization``. Preparation
-preserves the 2.1 calculations. Selection reuses working buffers and compares
-squared distances.
+Preparation preserves the 2.1 calculations. Selection reuses working buffers
+and compares squared distances.
 """
 
 from dataclasses import dataclass
@@ -11,7 +10,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import circstd
 
-SOURCE = "perf/python-numpy-optimization"
+SOURCE = "mdapy 2.2"
 
 
 @dataclass

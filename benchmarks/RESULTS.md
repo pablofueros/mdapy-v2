@@ -74,13 +74,13 @@ Los resultados demuestran la mejora en este dataset y entorno, pero no implican
 que ambas versiones sean numéricamente equivalentes para todas las entradas ni
 que estos tiempos se puedan extrapolar sin medir otras cargas.
 
-## 2.1 frente al candidato Python/NumPy para 2.2
+## 2.1 frente a 2.2
 
 ### Qué cambió
 
-La versión 2.1 ya había reducido el algoritmo a `O(n * d * k)`. El candidato no
-cambia ese crecimiento: reduce el coste del bucle que se repite para cada nueva
-selección.
+La versión 2.1 ya había reducido el algoritmo a `O(n * d * k)`. La versión 2.2
+no cambia ese crecimiento: reduce el coste del bucle que se repite para cada
+nueva selección.
 
 - Las desviaciones se conservan como un array de NumPy.
 - `differences` y `normalized` se reservan una vez y se reutilizan con `out`.
@@ -98,17 +98,17 @@ del alcance de esta subfase.
 
 ### Exploración de alternativas
 
-Antes de fijar el candidato se midieron temporalmente tres variantes: buffers
-con `linalg.norm`, distancias cuadradas con temporales por iteración y ambas
+Durante el desarrollo se midieron por separado tres variantes: buffers con
+`linalg.norm`, distancias cuadradas con temporales por iteración y ambas
 modificaciones combinadas. Los buffers por sí solos oscilaron entre una pequeña
 mejora y una pequeña regresión; las distancias cuadradas aportaron la mayor
 parte de la aceleración, alrededor de 1,26× a 1,53× en las cargas lineales.
 
-`combined` quedó cerca de la variante de distancias cuadradas y mostró una
+La combinación quedó cerca de la variante de distancias cuadradas y mostró una
 señal favorable de memoria en la carga de un millón de filas: unos 215 MiB de
-RSS frente a 243 MiB. Se conservó porque mantiene la aceleración, evita dos
-asignaciones por iteración y sigue siendo legible con el cálculo `einsum`
-encapsulado. Las variantes temporales se retiraron después del análisis.
+RSS frente a 243 MiB. Es la implementación de 2.2 porque mantiene la
+aceleración, evita dos asignaciones por iteración y sigue siendo legible con el
+cálculo `einsum` encapsulado.
 
 ### Primera comparación: aislar los ejes de escalado
 
@@ -126,37 +126,23 @@ uv run python benchmarks/scale.py --runs 7 --timeout 180 \
 
 [Datos brutos y resumen de escalado](results/v2_1-v2_2-scaling/)
 
-La campaña conserva el hash del primer candidato combinado. Esa referencia
+La campaña conserva el hash de la primera implementación de 2.2. Esa referencia
 todavía incluía un fallback para entradas complejas y mantenía las desviaciones
 como lista, aunque las entradas medidas ya seguían la ruta de buffers y
-distancias cuadradas. Los resultados no se reasignan al checkout posterior.
+distancias cuadradas. Los resultados conservan esa procedencia.
 
-La tabla muestra las medianas de selección aislada. Algunas cargas tienen la
-misma configuración numérica con nombres diferentes porque actúan como punto
-común de varios ejes; las diferencias entre ellas ayudan a apreciar el ruido de
-ejecución y no constituyen resultados independientes.
+La tabla resume las medianas de selección por eje. Los tiempos absolutos de
+estas cargas son inferiores a un segundo; esta campaña sirve para observar el
+escalado, no para estimar ahorro práctico.
 
-| Eje | Carga | 2.1 (s) | Primer candidato (s) | Aceleración |
-| :--- | :--- | ---: | ---: | ---: |
-| real | `datawave`, `k=5` | 0,028060 | 0,018819 | 1,49× |
-| real | `datawave`, `k=20` | 0,072310 | 0,068450 | 1,06× |
-| real | `datawave`, `k=100` | 0,365442 | 0,322873 | 1,13× |
-| filas | `n=10.000`, `d=3`, `k=20` | 0,003594 | 0,002324 | 1,55× |
-| filas | `n=100.000`, `d=3`, `k=20` | 0,040259 | 0,024412 | 1,65× |
-| filas | `n=1.000.000`, `d=3`, `k=20` | 0,381650 | 0,253087 | 1,51× |
-| columnas | `d=1` | 0,006963 | 0,004778 | 1,46× |
-| columnas | `d=3` | 0,036088 | 0,023501 | 1,54× |
-| columnas | `d=10` | 0,062780 | 0,038647 | 1,62× |
-| columnas | `d=30` | 0,145054 | 0,089312 | 1,62× |
-| selecciones | `k=5` | 0,013024 | 0,007108 | 1,83× |
-| selecciones | `k=20` | 0,039170 | 0,023403 | 1,67× |
-| selecciones | `k=100` | 0,177555 | 0,113294 | 1,57× |
-| selecciones | `k=500` | 0,883417 | 0,599381 | 1,47× |
-| dtype | `float32` | 0,051147 | 0,029546 | 1,73× |
-| dtype | `float64` | 0,040141 | 0,021446 | 1,87× |
-| dirección | ninguna direccional | 0,038376 | 0,022066 | 1,74× |
-| dirección | una direccional | 0,051195 | 0,043601 | 1,17× |
-| dirección | todas direccionales | 0,086541 | 0,079580 | 1,09× |
+| Eje | Rango medido | Aceleración de 2.2 | Lectura |
+| :--- | :--- | ---: | :--- |
+| `datawave` | `k=5–100` | 1,06–1,49× | Mejora pequeña en tiempo absoluto. |
+| filas | `n=10.000–1.000.000` | 1,51–1,65× | Mantiene el crecimiento lineal. |
+| columnas | `d=1–30` | 1,46–1,62× | La reducción sigue siendo eficaz al crecer `d`. |
+| selecciones | `k=5–500` | 1,47–1,83× | El ahorro se acumula al crecer `k`. |
+| dtype | `float32–float64` | 1,73–1,87× | Mejora en ambas precisiones medidas. |
+| direccionales | `0–3` variables | 1,09–1,74× | El módulo angular reduce el beneficio. |
 
 El crecimiento fue aproximadamente lineal al variar filas y selecciones. La
 mejora disminuyó al aumentar el trabajo angular, porque el módulo de los ángulos
@@ -168,7 +154,7 @@ ahorro absoluto relevante.
 
 La segunda fase respondió a esa limitación. En vez de aislar un eje, combinó
 filas y selecciones con tamaños encontrados en aplicaciones publicadas de MDA.
-Se utilizó la referencia ya alineada con el candidato `combined` definitivo.
+Se utilizó la implementación definitiva de 2.2.
 
 La confirmación definitiva se ejecutó el **27 de octubre de 2026** en Linux
 sobre WSL2 ARM64, con 12 CPU lógicas, Python 3.12.3, NumPy 1.26.0 y SciPy
@@ -190,20 +176,21 @@ filas y 1.000 selecciones utilizada antes de MDA en otro trabajo. Son cargas
 comparables por tamaño, no reproducciones de esos datasets ni de sus variantes
 del algoritmo.
 
-La tabla muestra las medianas de selección aislada. El RSS es el máximo del
-proceso completo y su variación compara las medianas de ambas versiones.
+La tabla muestra las medianas de selección aislada. Solo `datawave` utiliza un
+dataset real del repositorio; las demás filas reproducen tamaños documentados
+con datos sintéticos. El RSS es el máximo del proceso completo.
 
-| Carga | 2.1 (s) | 2.2 (s) | Aceleración | Ahorro (s) | Cambio RSS |
-| :--- | ---: | ---: | ---: | ---: | ---: |
-| `datawave`, `k=20` | 0,078 | 0,061 | 1,28× | 0,017 | −4,4 % |
-| `datawave`, `k=100` | 0,360 | 0,296 | 1,21× | 0,064 | −2,8 % |
-| 87.664 filas, `k=600` | 0,916 | 0,625 | 1,46× | 0,291 | −3,9 % |
-| 121.968 filas, `k=100` | 0,218 | 0,139 | 1,56× | 0,079 | −1,5 % |
-| 121.968 filas, `k=1.000` | 2,137 | 1,476 | 1,45× | 0,661 | −6,7 % |
-| 121.968 filas, `k=5.000` | 11,220 | 7,418 | 1,51× | 3,802 | −1,3 % |
-| 1.000.000 filas, `k=1.250` | 22,812 | 15,167 | 1,50× | 7,645 | −12,7 % |
-| 10.000 filas, `k=1.000` | 0,156 | 0,106 | 1,47× | 0,050 | +1,6 % |
-| 87.664 filas, `k=600`, una direccional | 1,329 | 1,215 | 1,09× | 0,115 | −4,9 % |
+| Referencia de escala | Filas | Selecciones | 2.1 (s) | 2.2 (s) | Ahorro | Aceleración | Cambio RSS |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `datawave` | 140.256 | 20 | 0,078 | 0,061 | 0,017 s | 1,28× | −4,4 % |
+| `datawave` | 140.256 | 100 | 0,360 | 0,296 | 0,064 s | 1,21× | −2,8 % |
+| Franklin et al. | 87.664 | 600 | 0,916 | 0,625 | 0,291 s | 1,46× | −3,9 % |
+| Castro et al. | 121.968 | 100 | 0,218 | 0,139 | 0,079 s | 1,56× | −1,5 % |
+| Castro et al. | 121.968 | 1.000 | 2,137 | 1,476 | 0,661 s | 1,45× | −6,7 % |
+| Castro et al. | 121.968 | 5.000 | 11,220 | 7,418 | 3,802 s | 1,51× | −1,3 % |
+| NC State | 1.000.000 | 1.250 | 22,812 | 15,167 | 7,645 s | 1,50× | −12,7 % |
+| TU Delft | 10.000 | 1.000 | 0,156 | 0,106 | 0,050 s | 1,47× | +1,6 % |
+| Control direccional | 87.664 | 600 | 1,329 | 1,215 | 0,115 s | 1,09× | −4,9 % |
 
 La llamada completa mejoró en las nueve cargas, entre 1,10× y 1,56×. El ahorro
 es pequeño en `datawave` con 20 selecciones, pero alcanza 3,80 s con 121.968
@@ -228,13 +215,12 @@ sí sola los mismos resultados en coma flotante. Por eso se compararon índices,
 incluidos los casos de empate y casi empate, en vez de aceptar únicamente
 distancias próximas.
 
-Se adopta la variante combinada para el desarrollo de 2.2. Mejora todas las
-cargas de confirmación, aporta ahorros absolutos relevantes en las mayores, no
-presenta un aumento material de memoria y sigue siendo explicable con
-operaciones NumPy pequeñas. La velocidad procede principalmente de las
-distancias cuadradas; los buffers se mantienen para evitar asignaciones y por
-su comportamiento de memoria. Numba y cualquier cambio de API quedan fuera de
-esta subfase.
+La versión 2.2 utiliza la implementación combinada. Mejora todas las cargas de
+confirmación, aporta ahorros absolutos relevantes en las mayores, no presenta
+un aumento material de memoria y sigue siendo explicable con operaciones NumPy
+pequeñas. La velocidad procede principalmente de las distancias cuadradas; los
+buffers se mantienen para evitar asignaciones y por su comportamiento de
+memoria. Numba y cualquier cambio de API quedan fuera de esta subfase.
 
 Los tiempos pertenecen a este equipo y a datos mayoritariamente sintéticos. No
 deben extrapolarse directamente a otros entornos, distribuciones de datos o
