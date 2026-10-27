@@ -1,0 +1,120 @@
+{
+  "created_at": "2026-10-20T22:22:23.816493+00:00",
+  "python": "3.12.3",
+  "numpy": "1.26.0",
+  "scipy": "1.15.1",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+  "machine": "aarch64",
+  "cpu_count": 12,
+  "random_seed": 20261020,
+  "workloads": {
+    "datawave-k5": {
+      "dataset": "datawave",
+      "selections": 5
+    },
+    "datawave-k20": {
+      "dataset": "datawave",
+      "selections": 20
+    },
+    "datawave-k100": {
+      "dataset": "datawave",
+      "selections": 100
+    },
+    "rows-n10000": {
+      "rows": 10000,
+      "columns": 3,
+      "selections": 20
+    },
+    "rows-n100000": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20
+    },
+    "rows-n1000000": {
+      "rows": 1000000,
+      "columns": 3,
+      "selections": 20
+    },
+    "columns-d1": {
+      "rows": 100000,
+      "columns": 1,
+      "selections": 20
+    },
+    "columns-d3": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20
+    },
+    "columns-d10": {
+      "rows": 100000,
+      "columns": 10,
+      "selections": 20
+    },
+    "columns-d30": {
+      "rows": 100000,
+      "columns": 30,
+      "selections": 20
+    },
+    "selections-k5": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 5
+    },
+    "selections-k20": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20
+    },
+    "selections-k100": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 100
+    },
+    "selections-k500": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 500
+    },
+    "dtype-float32": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20,
+      "dtype": "float32"
+    },
+    "dtype-float64": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20,
+      "dtype": "float64"
+    },
+    "directional-none": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20
+    },
+    "directional-one": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20,
+      "directional": 1
+    },
+    "directional-all": {
+      "rows": 100000,
+      "columns": 3,
+      "selections": 20,
+      "directional": 3
+    }
+  },
+  "runs": 7,
+  "timeout_s": 180.0,
+  "algorithms": {
+    "v2_1": {
+      "file": "v2_1.py",
+      "sha256": "e04933bda8b41f31b07261791287bef9ffc1cd0534793c035e689a5b1ae2f813"
+    },
+    "v2_2": {
+      "file": "v2_2.py",
+      "sha256": "406d42e2b7009c92f6ffdef8f787b624d8387dfc2e6c84378856c4d77c5e464d"
+    }
+  }
+}

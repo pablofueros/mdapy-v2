@@ -116,6 +116,7 @@ See the complete protocol, limitations, and raw measurements in the
 ```bash
 uv run benchmarks/run.py --check
 uv run benchmarks/run.py
+uv run benchmarks/scale.py --runs 7
 ```
 
 ## Examples

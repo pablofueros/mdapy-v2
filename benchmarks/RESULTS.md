@@ -73,3 +73,83 @@ entre 112,9 y 118,1 MiB. Para veinte selecciones fue un 77 % menor.
 Los resultados demuestran la mejora en este dataset y entorno, pero no implican
 que ambas versiones sean numéricamente equivalentes para todas las entradas ni
 que estos tiempos se puedan extrapolar sin medir otras cargas.
+
+## Escalado de 2.1 y candidato Python/NumPy para 2.2
+
+Medición del **21 de octubre de 2026** en el mismo entorno ARM64 descrito
+arriba, con Python 3.12.3, NumPy 1.26.0 y SciPy 1.15.1. Se comparó la referencia
+publicada `v2.1.0` con el candidato de la rama `perf-2.2-python-numpy`.
+
+La complejidad asintótica no cambia: ambas versiones realizan
+`O(n * d * k)` trabajo y utilizan `O(n * d)` memoria auxiliar. El candidato
+reutiliza las matrices de diferencias y normalización entre iteraciones y, para
+datos reales, compara distancias euclídeas al cuadrado mediante `einsum`. La
+raíz cuadrada es monótona y no cambia el orden. Las entradas complejas conservan
+la reducción con `np.linalg.norm`.
+
+Se midieron datos sintéticos deterministas con semilla 20261020, además de
+`datawave`. Cada carga se ejecutó siete veces en procesos independientes,
+alternando el orden de las referencias. La preparación, selección, llamada
+completa y memoria RSS máxima se registraron por separado.
+
+```bash
+uv run benchmarks/scale.py --runs 7 --timeout 180 \
+  --output benchmarks/results/v2_1-v2_2-scaling
+```
+
+[Datos brutos y resumen de la campaña](results/v2_1-v2_2-scaling/)
+
+### Corrección
+
+Las dos referencias produjeron exactamente los mismos índices, en el mismo
+orden, para los nueve casos numéricos y las 19 cargas medidas. Esto incluye
+empates, duplicados, casi empates en `float32` y `float64`, columnas
+direccionales, hasta un millón de filas, 30 columnas y 500 selecciones. No se
+aplicaron tolerancias a los índices.
+
+### Tiempos
+
+La tabla muestra medianas del tiempo de selección aislado. `Aceleración` es el
+cociente entre 2.1 y el candidato; un valor mayor que uno favorece a 2.2.
+
+| Eje | Carga | 2.1 (s) | Candidato 2.2 (s) | Aceleración |
+| :--- | :---- | ------: | ------------------: | -----------: |
+| real | `datawave`, `k=5` | 0,028060 | 0,018819 | 1,49× |
+| real | `datawave`, `k=20` | 0,072310 | 0,068450 | 1,06× |
+| real | `datawave`, `k=100` | 0,365442 | 0,322873 | 1,13× |
+| filas | `n=10.000` | 0,003594 | 0,002324 | 1,55× |
+| filas | `n=100.000` | 0,040259 | 0,024412 | 1,65× |
+| filas | `n=1.000.000` | 0,381650 | 0,253087 | 1,51× |
+| columnas | `d=1` | 0,006963 | 0,004778 | 1,46× |
+| columnas | `d=3` | 0,036088 | 0,023501 | 1,54× |
+| columnas | `d=10` | 0,062780 | 0,038647 | 1,62× |
+| columnas | `d=30` | 0,145054 | 0,089312 | 1,62× |
+| selecciones | `k=5` | 0,013024 | 0,007108 | 1,83× |
+| selecciones | `k=20` | 0,039170 | 0,023403 | 1,67× |
+| selecciones | `k=100` | 0,177555 | 0,113294 | 1,57× |
+| selecciones | `k=500` | 0,883417 | 0,599381 | 1,47× |
+| dtype | `float32` | 0,051147 | 0,029546 | 1,73× |
+| dtype | `float64` | 0,040141 | 0,021446 | 1,87× |
+| dirección | ninguna direccional | 0,038376 | 0,022066 | 1,74× |
+| dirección | una direccional | 0,051195 | 0,043601 | 1,17× |
+| dirección | todas direccionales | 0,086541 | 0,079580 | 1,09× |
+
+El crecimiento observado es aproximadamente lineal al variar por separado las
+filas y las selecciones, de acuerdo con `O(n * d * k)`. La mejora disminuye al
+aumentar el trabajo angular: con todas las columnas direccionales, el cálculo
+del módulo domina y la reducción de distancia aporta solo un 8,7 %.
+
+La llamada completa mejoró en las 19 cargas, entre 1,05× y 1,87×. La mediana
+del RSS máximo varió entre un 14,1 % menos y un 1,3 % más. Este RSS incluye el
+intérprete, imports y datos, por lo que no aísla únicamente los buffers del
+núcleo.
+
+### Decisión
+
+El candidato supera el criterio acordado: mejora claramente varias cargas
+representativas, no presenta regresiones temporales, conserva los índices
+exactos y no aumenta materialmente la memoria. La reutilización de buffers y
+las distancias cuadradas se incorporan juntas como evolución Python/NumPy de
+2.2. La acumulación por columnas estudiada durante la exploración no se adopta:
+fue muy rápida con tres variables, pero aproximadamente 3,6 veces más lenta que
+2.1 con 30 columnas. Numba queda fuera de esta subfase.
