@@ -15,8 +15,8 @@
 
 ---
 
-[![mdapy-v2 completes the benchmark in 0.086 seconds compared with 32.63
-seconds for ihc-mdapy](assets/performance/v2_0-v2_1.svg)](#performance)
+[![mdapy-v2 2.2 completes the benchmark in 0.067 seconds compared with 32.63
+seconds for ihc-mdapy](assets/performance/v2_0-v2_2.svg)](#performance)
 
 </div>
 
@@ -102,7 +102,7 @@ the exact selected indices before any timing is recorded.
 
 For readability, the chart labels the preserved 2.0 reference as `ihc-mdapy`:
 it uses the same selection algorithm as the latest published `ihc-mdapy`
-release, adapted to the current API for a controlled comparison.
+release, adapted to the current API. The `mdapy-v2` bar uses the latest and fastest available reference. Both measured the same `datawave` workload in the same software and hardware environment.
 
 Version 2.1 replaced repeated subset scans and a growing pair cache with
 incremental minimum distances. In the documented `datawave` experiment with
@@ -110,13 +110,23 @@ incremental minimum distances. In the documented `datawave` experiment with
 and peak RSS from 507 MiB to 118 MiB. These figures describe one environment
 and workload, not a universal speedup.
 
+Version 2.2 keeps the same algorithmic complexity and public API, but reduces
+the cost of each selection by reusing NumPy buffers and comparing squared
+distances. Across the documented workloads, complete calls improved by 1.10×
+to 1.56× while preserving the exact selected indices. The largest measured
+workload saved 7.64 seconds and reduced peak RSS by 12.7%.
+
 See the complete protocol, limitations, and raw measurements in the
 [benchmark results](benchmarks/RESULTS.md).
 
+`run.py` runs the compact `datawave` benchmark, while `scale.py` compares
+versions 2.1 and 2.2 across broader scaling workloads. Both validate the
+preserved references before recording timings and write their results to a new
+timestamped directory.
+
 ```bash
-uv run benchmarks/run.py --check
 uv run benchmarks/run.py
-uv run benchmarks/scale.py --runs 7
+uv run benchmarks/scale.py
 ```
 
 ## Examples
