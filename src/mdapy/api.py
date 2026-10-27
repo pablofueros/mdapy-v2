@@ -109,7 +109,7 @@ def max_diss_alg(
     if not 0 <= seed_index < n_points:
         raise ValueError("seed_index is out of bounds")
 
-    deviations = [col.standard_deviation for col in columns]
+    deviations = np.asarray([col.standard_deviation for col in columns])
     for index, deviation in enumerate(deviations):
         if not np.isfinite(deviation) or deviation <= 0:
             raise ValueError(f"Column {index} has zero or undefined deviation")

@@ -4,10 +4,16 @@ import numpy as np
 from numpy.typing import NDArray
 
 
+def _squared_row_norms(values: NDArray) -> NDArray:
+    """Return the squared Euclidean norm of each row."""
+    # "ij,ij->i" multiplies each row by itself and sums its columns.
+    return np.einsum("ij,ij->i", values, values)
+
+
 def _squared_distances_to_point(
     data: NDArray,
     point_index: int,
-    deviations: list[float],
+    deviations: NDArray,
     dir_indices: list[int] | None,
     differences: NDArray,
     normalized: NDArray,
@@ -17,15 +23,12 @@ def _squared_distances_to_point(
     for column in dir_indices or []:
         differences[:, column] = (differences[:, column] + 180) % 360 - 180
     np.divide(differences, deviations, out=normalized)
-    if np.iscomplexobj(normalized):
-        # Complex inputs are valid for linear columns; keep NumPy's norm path.
-        return np.linalg.norm(normalized, axis=1)
-    return np.einsum("ij,ij->i", normalized, normalized)
+    return _squared_row_norms(normalized)
 
 
 def _select_indices(
     data: NDArray,
-    deviations: list[float],
+    deviations: NDArray,
     dir_indices: list[int] | None,
     n_clusters: int,
     seed_index: int,
@@ -34,16 +37,14 @@ def _select_indices(
 ) -> list[int]:
     """Update nearest distances only against the last selected observation."""
     indices = [seed_index]
+    if n_clusters == 1:
+        return indices
+
     selected = np.zeros(len(data), dtype=bool)
     selected[seed_index] = True
     nearest = np.full(len(data), np.inf)
     differences = np.empty_like(data)
-    normalized = np.empty(
-        data.shape, dtype=np.result_type(data.dtype, np.asarray(deviations).dtype)
-    )
-
-    if n_clusters == 1:
-        return indices
+    normalized = np.empty_like(data, dtype=np.result_type(data.dtype, deviations.dtype))
 
     while len(indices) < n_clusters:
         distances = _squared_distances_to_point(

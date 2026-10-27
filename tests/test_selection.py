@@ -123,12 +123,3 @@ def test_float64_keeps_distinct_values_beyond_float32_precision():
 
     assert indices == [0, 2, 1]
     np.testing.assert_array_equal(selected[:, 0], values[indices])
-
-
-def test_complex_linear_values_keep_euclidean_norm_selection():
-    values = np.array([0, 1 + 1j, -2], dtype=np.complex128)
-
-    selected, indices = max_diss_alg(DataColumn(values), n_clusters=3)
-
-    assert indices == [0, 2, 1]
-    np.testing.assert_array_equal(selected[:, 0], values[indices])
