@@ -43,10 +43,11 @@ def test_equal_distances_select_first_input_index():
     assert indices == [1, 0, 2]
 
 
-def test_nearby_distances_do_not_become_an_artificial_tie():
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_nearby_distances_do_not_become_an_artificial_tie(dtype):
     _, indices = max_diss_alg(
-        DataColumn([0, 1, 1, 0, 0, 0, 0, 0]),
-        DataColumn([0, 0, 0.000173, -0.5, 0.5, -0.5, 0.5, 0]),
+        DataColumn(np.asarray([0, 1, 1, 0, 0, 0, 0, 0], dtype=dtype)),
+        DataColumn(np.asarray([0, 0, 0.000173, -0.5, 0.5, -0.5, 0.5, 0], dtype=dtype)),
         n_clusters=3,
     )
 
@@ -117,6 +118,15 @@ def test_algorithm_preserves_float64_values(scale):
 
 def test_float64_keeps_distinct_values_beyond_float32_precision():
     values = np.array([100_000_000, 100_000_001, 100_000_002], dtype=np.float64)
+
+    selected, indices = max_diss_alg(DataColumn(values), n_clusters=3)
+
+    assert indices == [0, 2, 1]
+    np.testing.assert_array_equal(selected[:, 0], values[indices])
+
+
+def test_complex_linear_values_keep_euclidean_norm_selection():
+    values = np.array([0, 1 + 1j, -2], dtype=np.complex128)
 
     selected, indices = max_diss_alg(DataColumn(values), n_clusters=3)
 

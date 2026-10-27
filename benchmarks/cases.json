@@ -5,7 +5,7 @@
     "directional": [],
     "seed_index": 0,
     "selections": 3,
-    "expected": {"v2_0": [0, 3, 2], "v2_1": [0, 3, 2]}
+    "expected": {"v2_0": [0, 3, 2], "v2_1": [0, 3, 2], "v2_2": [0, 3, 2]}
   },
   {
     "name": "seed",
@@ -13,7 +13,7 @@
     "directional": [],
     "seed_index": 2,
     "selections": 3,
-    "expected": {"v2_0": [2, 0, 3], "v2_1": [2, 0, 3]}
+    "expected": {"v2_0": [2, 0, 3], "v2_1": [2, 0, 3], "v2_2": [2, 0, 3]}
   },
   {
     "name": "directional",
@@ -21,7 +21,7 @@
     "directional": [0],
     "seed_index": 0,
     "selections": 2,
-    "expected": {"v2_0": [0, 2], "v2_1": [0, 2]}
+    "expected": {"v2_0": [0, 2], "v2_1": [0, 2], "v2_2": [0, 2]}
   },
   {
     "name": "mixed",
@@ -29,7 +29,7 @@
     "directional": [1],
     "seed_index": 0,
     "selections": 3,
-    "expected": {"v2_0": [0, 2, 3], "v2_1": [0, 2, 3]}
+    "expected": {"v2_0": [0, 2, 3], "v2_1": [0, 2, 3], "v2_2": [0, 2, 3]}
   },
   {
     "name": "tie",
@@ -37,7 +37,7 @@
     "directional": [],
     "seed_index": 1,
     "selections": 3,
-    "expected": {"v2_0": [1, 0, 2], "v2_1": [1, 0, 2]}
+    "expected": {"v2_0": [1, 0, 2], "v2_1": [1, 0, 2], "v2_2": [1, 0, 2]}
   },
   {
     "name": "duplicates",
@@ -45,7 +45,7 @@
     "directional": [],
     "seed_index": 0,
     "selections": 4,
-    "expected": {"v2_0": [0, 2, 1, 3], "v2_1": [0, 2, 1, 3]}
+    "expected": {"v2_0": [0, 2, 1, 3], "v2_1": [0, 2, 1, 3], "v2_2": [0, 2, 1, 3]}
   },
   {
     "name": "near_tie",
@@ -53,7 +53,7 @@
     "directional": [],
     "seed_index": 0,
     "selections": 3,
-    "expected": {"v2_0": [0, 1, 3], "v2_1": [0, 2, 3]}
+    "expected": {"v2_0": [0, 1, 3], "v2_1": [0, 2, 3], "v2_2": [0, 2, 3]}
   },
   {
     "name": "two_directional",
@@ -61,7 +61,7 @@
     "directional": [0, 1],
     "seed_index": 0,
     "selections": 5,
-    "expected": {"v2_0": [0, 2, 3, 1, 4], "v2_1": [0, 2, 3, 1, 4]}
+    "expected": {"v2_0": [0, 2, 3, 1, 4], "v2_1": [0, 2, 3, 1, 4], "v2_2": [0, 2, 3, 1, 4]}
   },
   {
     "name": "wrapped_angles",
@@ -69,6 +69,6 @@
     "directional": [1],
     "seed_index": 0,
     "selections": 4,
-    "expected": {"v2_0": [0, 3, 2, 1], "v2_1": [0, 3, 2, 1]}
+    "expected": {"v2_0": [0, 3, 2, 1], "v2_1": [0, 3, 2, 1], "v2_2": [0, 3, 2, 1]}
   }
 ]
