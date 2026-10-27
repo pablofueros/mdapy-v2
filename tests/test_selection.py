@@ -43,10 +43,11 @@ def test_equal_distances_select_first_input_index():
     assert indices == [1, 0, 2]
 
 
-def test_nearby_distances_do_not_become_an_artificial_tie():
+@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+def test_nearby_distances_do_not_become_an_artificial_tie(dtype):
     _, indices = max_diss_alg(
-        DataColumn([0, 1, 1, 0, 0, 0, 0, 0]),
-        DataColumn([0, 0, 0.000173, -0.5, 0.5, -0.5, 0.5, 0]),
+        DataColumn(np.asarray([0, 1, 1, 0, 0, 0, 0, 0], dtype=dtype)),
+        DataColumn(np.asarray([0, 0, 0.000173, -0.5, 0.5, -0.5, 0.5, 0], dtype=dtype)),
         n_clusters=3,
     )
 

@@ -1,4 +1,4 @@
-"""Validate and benchmark the fixed 2.0 and 2.1 algorithm references."""
+"""Validate and benchmark the available algorithm references."""
 
 import argparse
 import hashlib
@@ -49,7 +49,7 @@ def validate() -> None:
                 raise AssertionError(
                     f"{path.stem}/{case['name']}: {indices} != {expected}"
                 )
-            source = np.column_stack(columns).astype(points.dtype)
+            source = np.column_stack(list(columns)).astype(points.dtype)
             np.testing.assert_array_equal(points, source[indices])
 
 
