@@ -1,0 +1,72 @@
+{
+  "created_at": "2026-10-28T14:49:10.248161+00:00",
+  "python": "3.12.3",
+  "numpy": "1.26.0",
+  "scipy": "1.15.1",
+  "numba": "0.68.1",
+  "llvmlite": "0.50.0",
+  "numba_cpu_name": "generic",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+  "machine": "aarch64",
+  "cpu_count": 12,
+  "random_seed": 20261020,
+  "suite": "grounded",
+  "workloads": {
+    "grounded-datawave-k20": {
+      "dataset": "datawave",
+      "selections": 20
+    },
+    "grounded-datawave-k100": {
+      "dataset": "datawave",
+      "selections": 100
+    },
+    "grounded-franklin-k600": {
+      "rows": 87664,
+      "columns": 3,
+      "selections": 600
+    },
+    "grounded-castro-k100": {
+      "rows": 121968,
+      "columns": 3,
+      "selections": 100
+    },
+    "grounded-castro-k1000": {
+      "rows": 121968,
+      "columns": 3,
+      "selections": 1000
+    },
+    "grounded-castro-k5000": {
+      "rows": 121968,
+      "columns": 3,
+      "selections": 5000
+    },
+    "grounded-ncsu-k1250": {
+      "rows": 1000000,
+      "columns": 3,
+      "selections": 1250
+    },
+    "grounded-tudelft-k1000": {
+      "rows": 10000,
+      "columns": 3,
+      "selections": 1000
+    },
+    "grounded-directional-k600": {
+      "rows": 87664,
+      "columns": 3,
+      "selections": 600,
+      "directional": 1
+    }
+  },
+  "runs": 7,
+  "timeout_s": 900.0,
+  "algorithms": {
+    "v2_2": {
+      "file": "v2_2.py",
+      "sha256": "c93ffbabb4aac5042cbc43dfab3c81c04cef76c8506db6b75078adfa4eb3afec"
+    },
+    "numba_candidate": {
+      "file": "numba_candidate.py",
+      "sha256": "875733006c98cb122025cd39aa304adb172cbdaf993c2d7aeae17116198f3d87"
+    }
+  }
+}

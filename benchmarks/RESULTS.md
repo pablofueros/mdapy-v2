@@ -1,5 +1,9 @@
 # Resultados
 
+> La evaluación opcional de Numba para 2.3 se conserva por separado en
+> [`experiments/numba/README.md`](experiments/numba/README.md). Este documento
+> mantiene el alcance y las mediciones históricas de 2.2.
+
 ## 2.0 frente a 2.1
 
 Se comparan `v2.0.0` y `v2.1.0`, los últimos parches disponibles de ambas

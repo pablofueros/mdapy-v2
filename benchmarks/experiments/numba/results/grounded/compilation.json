@@ -1,0 +1,20 @@
+{
+  "float64": {
+    "workload": "selections-k5",
+    "uncached_first_selection_s": 0.5722132930022781,
+    "uncached_hot_selection_s": 0.0011723999996320345,
+    "uncached_process_s": 1.1852812799988897,
+    "cached_first_selection_s": 0.1005226510023931,
+    "cached_hot_selection_s": 0.0022819369987701066,
+    "cached_process_s": 0.8370809620028012
+  },
+  "float32": {
+    "workload": "dtype-float32",
+    "uncached_first_selection_s": 0.43778500000189524,
+    "uncached_hot_selection_s": 0.005628437000268605,
+    "uncached_process_s": 1.0076157770017744,
+    "cached_first_selection_s": 0.1104514519975055,
+    "cached_hot_selection_s": 0.0060840050064143725,
+    "cached_process_s": 0.7148810889993911
+  }
+}
