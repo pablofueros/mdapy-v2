@@ -16,7 +16,7 @@
 ---
 
 [![mdapy-v2 2.2 completes the benchmark in 0.067 seconds compared with 32.63
-seconds for ihc-mdapy](assets/performance/v2_0-v2_2.svg)](#performance)
+seconds for ihc-mdapy](https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_0-v2_2.svg)](#performance)
 
 </div>
 

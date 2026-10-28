@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/pablofueros/mdapy-v2/compare/v2.2.0...v2.2.1) (2026-10-27)
+
+
+### Bug Fixes
+
+* use absolute performance image URL ([6cf7191](https://github.com/pablofueros/mdapy-v2/commit/6cf7191480a7ab49a4db1b41ea9ed463cc92f00a))
+
 ## [2.2.0](https://github.com/pablofueros/mdapy-v2/compare/v2.1.0...v2.2.0) (2026-10-27)
 
 
