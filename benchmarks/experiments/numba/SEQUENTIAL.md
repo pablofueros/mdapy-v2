@@ -1,4 +1,4 @@
-# Evaluación secuencial de Numba para `mdapy` 2.3
+# Evaluación de Numba secuencial para `mdapy` 2.3
 
 ## Alcance y conclusión
 
