@@ -1,8 +1,8 @@
 # Resultados
 
-> La evaluación opcional de Numba para 2.3 se conserva por separado en
-> [`experiments/numba/SEQUENTIAL.md`](experiments/numba/SEQUENTIAL.md). Este documento
-> mantiene el alcance y las mediciones históricas de 2.2.
+> Las evaluaciones opcionales de Numba y Rust para 2.3 se conservan por separado
+> en [`experiments/`](experiments/README.md). Este documento mantiene el alcance
+> y las mediciones históricas de 2.2.
 
 ## 2.0 frente a 2.1
 
