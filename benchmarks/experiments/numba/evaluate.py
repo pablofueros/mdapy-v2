@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 from datetime import UTC, datetime
+from importlib import import_module
 from importlib.metadata import version
 from pathlib import Path
 from statistics import median
@@ -36,6 +37,7 @@ ALGORITHMS = ("v2_2", "numba_candidate")
 ALGORITHM_PATHS = {
     "v2_2": BENCHMARKS / "algorithms/v2_2.py",
     "numba_candidate": ROOT / "numba_candidate.py",
+    "numba_parallel_candidate": ROOT / "numba_parallel_candidate.py",
 }
 PRIMARY_WORKLOADS = (
     "grounded-franklin-k600",
@@ -70,11 +72,11 @@ def peak_mib() -> float:
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / divisor
 
 
-def validate() -> None:
-    """Require the candidate to reproduce every preserved 2.2 reference case."""
+def validate(algorithm_names: tuple[str, ...] = ALGORITHMS) -> None:
+    """Require candidates to reproduce every preserved 2.2 reference case."""
     cases = json.loads((BENCHMARKS / "cases.json").read_text())
     baseline = load_algorithm("v2_2")
-    candidate = load_algorithm("numba_candidate")
+    candidates = [load_algorithm(name) for name in algorithm_names if name != "v2_2"]
     for dtype in (np.float32, np.float64):
         for case in cases:
             columns = tuple(
@@ -85,19 +87,24 @@ def validate() -> None:
                 case["selections"],
                 case["seed_index"],
             )
-            candidate_points, candidate_indices = candidate.select(
-                candidate.prepare(columns, case["directional"]),
-                case["selections"],
-                case["seed_index"],
-            )
             expected = case["expected"]["v2_2"]
-            if baseline_indices != expected or candidate_indices != expected:
+            if baseline_indices != expected:
                 raise AssertionError(
                     f"{case['name']}/{dtype.__name__}: "
-                    f"baseline={baseline_indices}, candidate={candidate_indices}, "
-                    f"expected={expected}"
+                    f"baseline={baseline_indices}, expected={expected}"
                 )
-            np.testing.assert_array_equal(candidate_points, baseline_points)
+            for candidate in candidates:
+                candidate_points, candidate_indices = candidate.select(
+                    candidate.prepare(columns, case["directional"]),
+                    case["selections"],
+                    case["seed_index"],
+                )
+                if candidate_indices != expected:
+                    raise AssertionError(
+                        f"{case['name']}/{dtype.__name__}/{candidate.SOURCE}: "
+                        f"candidate={candidate_indices}, expected={expected}"
+                    )
+                np.testing.assert_array_equal(candidate_points, baseline_points)
 
 
 def worker(algorithm_name: str, workload_name: str) -> dict[str, Any]:
@@ -117,13 +124,23 @@ def worker(algorithm_name: str, workload_name: str) -> dict[str, Any]:
     points, indices = algorithm.select(prepared, selections, seed_index)
     first_selection_s = perf_counter() - started
     hot_selection_s = first_selection_s
-    if algorithm_name == "numba_candidate":
+    if algorithm_name != "v2_2":
         started = perf_counter()
         hot_points, hot_indices = algorithm.select(prepared, selections, seed_index)
         hot_selection_s = perf_counter() - started
         if hot_indices != indices:
             raise AssertionError("Numba first and hot calls selected different indices")
         np.testing.assert_array_equal(hot_points, points)
+
+    numba_num_threads = None
+    numba_threading_layer = None
+    if algorithm_name != "v2_2":
+        numba_module: Any = import_module("numba")
+        numba_num_threads = numba_module.get_num_threads()
+        try:
+            numba_threading_layer = numba_module.threading_layer()
+        except ValueError:
+            pass
 
     return {
         "algorithm": algorithm_name,
@@ -148,6 +165,8 @@ def worker(algorithm_name: str, workload_name: str) -> dict[str, Any]:
         "first_call_s": preparation_s + first_selection_s,
         "hot_call_s": preparation_s + hot_selection_s,
         "peak_mib": peak_mib(),
+        "numba_num_threads": numba_num_threads,
+        "numba_threading_layer": numba_threading_layer,
     }
 
 
@@ -160,9 +179,11 @@ def run_worker(
     workload_name: str,
     timeout: float,
     cache_dir: Path,
+    extra_env: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], float]:
     env = os.environ.copy()
     env["NUMBA_CACHE_DIR"] = str(cache_dir)
+    env.update(extra_env or {})
     started = perf_counter()
     completed = subprocess.run(
         [
@@ -357,7 +378,9 @@ def parse_args() -> argparse.Namespace:
         "--output",
         default=str(ROOT / "results" / datetime.now(UTC).strftime("%Y%m%d-%H%M%S")),
     )
-    parser.add_argument("--worker", choices=ALGORITHMS, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--worker", choices=tuple(ALGORITHM_PATHS), help=argparse.SUPPRESS
+    )
     parser.add_argument("--workload", choices=WORKLOADS, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.runs < 2 or args.timeout <= 0:
