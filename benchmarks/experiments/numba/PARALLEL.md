@@ -6,8 +6,8 @@ Esta campaña compara el núcleo NumPy 2.2, el candidato Numba secuencial y una
 variante que paraleliza por filas la actualización de distancias. No cambia la
 API pública ni las dependencias del paquete.
 
-El paralelismo es una mejora importante para cargas pesadas, pero no es un
-reemplazo universal del candidato secuencial:
+El paralelismo es una mejora importante para las cargas pesadas a las que se
+dirigiría un motor Numba opcional, aunque no acelera cualquier carga posible:
 
 - reprodujo exactamente los mismos índices y su orden en todos los casos de
   referencia, los cinco casos de ajuste, las nueve cargas de confirmación y las
@@ -19,11 +19,16 @@ reemplazo universal del candidato secuencial:
 - una carga de una sola columna fue 0,59× respecto a NumPy y 0,43× respecto a
   Numba secuencial: el coste de coordinar hilos supera el trabajo disponible.
 
-Por tanto, una futura integración no debería ofrecer dos motores Numba. El motor
-`numba` puede conservar ambos kernels y elegir el paralelo solo cuando el
-volumen de trabajo amortice su coste. El umbral no se fija en este experimento:
-debe calibrarse y validarse en la matriz de plataformas antes de formar parte
-del contrato de la biblioteca.
+Estos resultados deben interpretarse dentro del contrato de uso previsto.
+NumPy continuaría siendo el motor predeterminado para cargas normales, sin
+dependencias ni configuración adicionales. Numba sería una elección explícita
+para una carga grande o para varias ejecuciones que amorticen la compilación.
+En ese ámbito, el kernel paralelo es el candidato principal.
+
+Una futura integración no debería ofrecer dos motores Numba. El kernel
+secuencial puede conservarse como referencia o como respaldo interno para
+casos evidentemente pequeños, pero una selección adaptativa perfecta no es un
+requisito para justificar el motor acelerado.
 
 ## Diseño del candidato
 
@@ -92,10 +97,12 @@ con poco trabajo por iteración. No indican un error numérico: son el coste fij
 de planificar y sincronizar el bucle paralelo. A partir de cargas mayores, más
 columnas o más selecciones, el paralelismo pasa a ser favorable.
 
-No basta con usar solo el número de filas como umbral. El trabajo depende al
-menos de filas, columnas, selecciones y columnas direccionales; además, la
-frontera cambia con CPU y backend de hilos. Una política automática necesitará
-una métrica compuesta y validación multiplataforma.
+Estas regresiones delimitan el ámbito del motor opcional, pero no invalidan su
+uso para trabajo pesado: las cargas pequeñas continuarían usando NumPy de forma
+predeterminada. Si se añade un respaldo secuencial interno, no basta con usar
+solo el número de filas como umbral. El trabajo depende también de columnas,
+selecciones y columnas direccionales, y la frontera cambia con CPU y backend de
+hilos.
 
 ## Coste frío y compatibilidad
 
@@ -114,16 +121,19 @@ la integración antes de probar las plataformas objetivo.
 ## Decisión experimental
 
 Numba queda validado como vía educativa y como optimización potencial para
-cargas pesadas. El candidato secuencial aporta una mejora amplia y predecible;
-el paralelo añade una mejora sustancial cuando hay suficiente trabajo, pero
-requiere selección adaptativa y control del número de hilos.
+cargas pesadas o repetidas. NumPy seguiría siendo la opción sencilla y
+predeterminada. Dentro del motor Numba, el candidato paralelo ofrece el mejor
+rendimiento para el uso previsto; el secuencial conserva valor como referencia
+y posible respaldo interno. El control del número de hilos sí debe formar parte
+del diseño, pero el despacho automático entre ambos kernels es una mejora
+posterior, no una condición para considerar viable el motor.
 
 La siguiente subfase, si se decide integrar, debe mantenerse separada de este
 experimento y resolver primero:
 
 1. compatibilidad y corrección en Linux x86-64, macOS ARM64 y Windows x86-64;
-2. un umbral conservador que nunca penalice de forma importante las cargas
-   pequeñas y que pueda probarse de manera determinista;
+2. el alcance documentado del motor para cargas grandes o repetidas y, de forma
+   opcional, un respaldo conservador para casos claramente pequeños;
 3. convivencia con aplicaciones que ya administran sus propios hilos;
 4. extra de instalación, importación diferida y fallback claro a NumPy;
 5. contrato del futuro `engine`, sin exponer los dos kernels Numba como motores
