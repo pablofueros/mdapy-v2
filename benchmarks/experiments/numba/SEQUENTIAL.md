@@ -1,10 +1,13 @@
 # Evaluación de Numba secuencial para `mdapy` 2.3
 
+Esta página conserva la campaña secuencial como referencia independiente. La
+[evaluación posterior del paralelismo](PARALLEL.md) compara ese mismo candidato
+con un kernel Numba que distribuye entre hilos la actualización de distancias.
+
 ## Alcance y conclusión
 
 Esta evaluación compara el núcleo NumPy de 2.2 con un candidato secuencial
-compilado con Numba. No cambia la API pública, no añade dependencias al paquete
-y no estudia todavía el paralelismo.
+compilado con Numba. No cambia la API pública ni añade dependencias al paquete.
 
 El candidato supera el criterio acordado de corrección y rendimiento:
 
@@ -126,8 +129,8 @@ opcional y con importación diferida.
 ## Decisión para la siguiente subfase
 
 La evaluación secuencial queda aceptada desde el punto de vista algorítmico y
-de rendimiento. El paralelismo se estudia en una rama y una campaña posteriores
-para conservar esta referencia secuencial independiente.
+de rendimiento. El paralelismo se estudió después en una rama y una campaña
+independientes para no alterar esta referencia.
 
 Antes de incorporar Numba se requiere una subfase independiente que:
 

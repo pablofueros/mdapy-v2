@@ -1,0 +1,62 @@
+{
+  "created_at": "2026-10-28T15:02:08.438275+00:00",
+  "python": "3.12.3",
+  "numpy": "1.26.0",
+  "scipy": "1.15.1",
+  "numba": "0.68.1",
+  "llvmlite": "0.50.0",
+  "numba_cpu_name": "generic",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+  "machine": "aarch64",
+  "cpu_count": 12,
+  "random_seed": 20261020,
+  "mode": "tuning",
+  "suite": null,
+  "thread_counts": [
+    1,
+    2,
+    4,
+    8,
+    12
+  ],
+  "comparison_threads": 12,
+  "workloads": {
+    "grounded-datawave-k20": {
+      "dataset": "datawave",
+      "selections": 20
+    },
+    "columns-d30": {
+      "rows": 100000,
+      "columns": 30,
+      "selections": 20
+    },
+    "grounded-castro-k5000": {
+      "rows": 121968,
+      "columns": 3,
+      "selections": 5000
+    },
+    "grounded-ncsu-k1250": {
+      "rows": 1000000,
+      "columns": 3,
+      "selections": 1250
+    },
+    "grounded-directional-k600": {
+      "rows": 87664,
+      "columns": 3,
+      "selections": 600,
+      "directional": 1
+    }
+  },
+  "runs": 7,
+  "timeout_s": 900,
+  "algorithms": {
+    "numba_candidate": {
+      "file": "numba_candidate.py",
+      "sha256": "875733006c98cb122025cd39aa304adb172cbdaf993c2d7aeae17116198f3d87"
+    },
+    "numba_parallel_candidate": {
+      "file": "numba_parallel_candidate.py",
+      "sha256": "324fc1acaf80d0acc13037aae2e03fe2f339f5e697c4bbd5cd4e73ff2b511a36"
+    }
+  }
+}

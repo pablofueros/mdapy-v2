@@ -1,0 +1,50 @@
+{
+  "numba_candidate": {
+    "float64": {
+      "workload": "selections-k5",
+      "uncached_first_selection_s": 0.8028754030019627,
+      "uncached_hot_selection_s": 0.0028825729968957603,
+      "uncached_process_s": 1.5314335740040406,
+      "cached_first_selection_s": 0.11064741900190711,
+      "cached_hot_selection_s": 0.0019437730006757192,
+      "cached_process_s": 0.7706891509951674,
+      "numba_num_threads": 12,
+      "numba_threading_layer": "omp"
+    },
+    "float32": {
+      "workload": "dtype-float32",
+      "uncached_first_selection_s": 0.511359944997821,
+      "uncached_hot_selection_s": 0.006605096998100635,
+      "uncached_process_s": 1.1053161819945672,
+      "cached_first_selection_s": 0.11420461600209819,
+      "cached_hot_selection_s": 0.006313880003290251,
+      "cached_process_s": 0.7136340639990522,
+      "numba_num_threads": 12,
+      "numba_threading_layer": "omp"
+    }
+  },
+  "numba_parallel_candidate": {
+    "float64": {
+      "workload": "selections-k5",
+      "uncached_first_selection_s": 1.03405166399898,
+      "uncached_hot_selection_s": 0.0012918880020151846,
+      "uncached_process_s": 1.6322934039999382,
+      "cached_first_selection_s": 0.10755112599872518,
+      "cached_hot_selection_s": 0.0012221379947732203,
+      "cached_process_s": 0.6695910400012508,
+      "numba_num_threads": 1,
+      "numba_threading_layer": "omp"
+    },
+    "float32": {
+      "workload": "dtype-float32",
+      "uncached_first_selection_s": 0.8499507309970795,
+      "uncached_hot_selection_s": 0.005712353995477315,
+      "uncached_process_s": 1.4697063600033289,
+      "cached_first_selection_s": 0.11865836200013291,
+      "cached_hot_selection_s": 0.006387731002178043,
+      "cached_process_s": 0.688116748999164,
+      "numba_num_threads": 1,
+      "numba_threading_layer": "omp"
+    }
+  }
+}
