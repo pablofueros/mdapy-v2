@@ -1,4 +1,4 @@
-# Evaluación secuencial de Numba para `mdapy` 2.3
+# Evaluación de Numba secuencial para `mdapy` 2.3
 
 Esta página conserva la campaña secuencial como referencia independiente. La
 [evaluación posterior del paralelismo](PARALLEL.md) compara ese mismo candidato
