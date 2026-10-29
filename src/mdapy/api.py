@@ -99,7 +99,9 @@ def max_diss_alg(
     show_progress : bool, optional
         Display selection progress, by default False.
     engine : {"numpy", "numba"}, optional
-        Numerical engine used for the selection, by default "numpy".
+        Numerical engine used for the selection, by default "numpy". The
+        "numba" engine requires the optional ``numba`` installation extra and
+        is intended for large or repeated selections.
 
     Returns
     -------

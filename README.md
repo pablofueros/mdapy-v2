@@ -38,6 +38,13 @@ public API, correctness checks, examples, and performance of the algorithm.
 uv pip install mdapy-v2
 ```
 
+Install the optional Numba engine if you want to accelerate large or repeated
+selections:
+
+```bash
+uv pip install "mdapy-v2[numba]"
+```
+
 The distribution name changed, but the import remains short and familiar:
 
 ```python
@@ -78,6 +85,26 @@ points, indices = max_diss_alg(
 )
 ```
 
+### Optional Numba engine
+
+NumPy is the default engine and remains the best starting point for small or
+one-off selections. After installing the `numba` extra, select the compiled
+engine explicitly for larger or repeated workloads:
+
+```python
+points, indices = max_diss_alg(
+    DataColumn(tp),
+    DataColumn(hs),
+    n_clusters=3,
+    engine="numba",
+)
+```
+
+The first call for each input dtype compiles or loads a cached specialization,
+so it can be slower than NumPy. Later calls reuse the compiled code. The library
+does not choose a thread count: the engine respects Numba's current thread
+configuration.
+
 ## How it works
 
 The implementation follows the formulation described in
@@ -116,13 +143,18 @@ distances. Across the documented workloads, complete calls improved by 1.10×
 to 1.56× while preserving the exact selected indices. The largest measured
 workload saved 7.64 seconds and reduced peak RSS by 12.7%.
 
+Version 2.3 adds the optional Numba engine without changing the NumPy default.
+In the public-API confirmation campaign, Numba was slower for the smallest
+workload but accelerated the repeated heavy workload by 7.48×. Both engines
+produced exactly the same selected indices in every measured run.
+
 See the complete protocol, limitations, and raw measurements in the
 [benchmark results](benchmarks/RESULTS.md).
 
-`run.py` runs the compact `datawave` benchmark, while `scale.py` compares
-versions 2.1 and 2.2 across broader scaling workloads. Both validate the
-preserved references before recording timings and write their results to a new
-timestamped directory.
+`run.py` runs the compact `datawave` benchmark, `scale.py` compares versions 2.1
+and 2.2 across broader scaling workloads, and `numba.py` confirms the current
+public NumPy and Numba engines. They validate the preserved references before
+recording timings and write their results to a new output directory.
 
 ```bash
 uv run benchmarks/run.py
