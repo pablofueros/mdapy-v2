@@ -1,5 +1,9 @@
 # Evaluación de Rust secuencial para `mdapy` 2.3
 
+Esta página conserva la campaña secuencial como referencia independiente. La
+[evaluación posterior con Rayon](PARALLEL.md) estudia la actualización de
+distancias por filas con varios hilos.
+
 ## Alcance y conclusión
 
 Este experimento estudia si un núcleo escrito en Rust merece una evaluación más

@@ -82,9 +82,11 @@ def run_rust(
     timeout: float,
     *,
     source: Path = RUST_SOURCE,
+    extra_arguments: tuple[str, ...] = (),
 ) -> tuple[dict[str, Any], float]:
     command = ["rust-script"]
     command.extend([str(source), str(fixture), str(repeats)])
+    command.extend(extra_arguments)
     started = perf_counter()
     completed = subprocess.run(
         command,
@@ -103,7 +105,14 @@ def run_rust(
     return json.loads(completed.stdout), elapsed
 
 
-def rust_worker(workload_name: str, timeout: float) -> dict[str, Any]:
+def rust_worker(
+    workload_name: str,
+    timeout: float,
+    *,
+    algorithm_name: str = "rust_candidate",
+    source: Path = RUST_SOURCE,
+    extra_arguments: tuple[str, ...] = (),
+) -> dict[str, Any]:
     """Measure one Rust CLI process while retaining its internal kernel time."""
     started = perf_counter()
     reference = numba_evaluate.load_algorithm("v2_2")
@@ -118,7 +127,13 @@ def rust_worker(workload_name: str, timeout: float) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="mdapy-rust-input-") as temporary:
         fixture = Path(temporary) / "input.bin"
         serialization_s = write_fixture(prepared, selections, seed_index, fixture)
-        result, rust_cli_s = run_rust(fixture, 2, timeout)
+        result, rust_cli_s = run_rust(
+            fixture,
+            2,
+            timeout,
+            source=source,
+            extra_arguments=extra_arguments,
+        )
 
     timings = [float(value) for value in result["selection_s"]]
     if len(timings) != 2:
@@ -127,8 +142,8 @@ def rust_worker(workload_name: str, timeout: float) -> dict[str, Any]:
     input_read_s = float(result["input_read_s"])
     rust_overhead_s = max(0.0, rust_cli_s - input_read_s - sum(timings))
     return {
-        "algorithm": "rust_candidate",
-        "source": "experimental sequential Rust candidate based on mdapy 2.2",
+        "algorithm": algorithm_name,
+        "source": f"experimental {algorithm_name} based on mdapy 2.2",
         "workload": workload_name,
         "rows": len(columns[0]),
         "columns": len(columns),
