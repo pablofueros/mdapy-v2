@@ -22,6 +22,7 @@ from typing import Any
 import numpy as np
 import scipy
 
+from benchmarks.experiments.compact_results import compact_campaign
 from benchmarks.scale import (
     GROUNDED_WORKLOADS,
     RANDOM_SEED,
@@ -364,6 +365,7 @@ def benchmark(args: argparse.Namespace) -> Path:
     (output / "summary.json").write_text(
         json.dumps(summarize(records), indent=2) + "\n"
     )
+    compact_campaign(output)
     return output
 
 
@@ -399,7 +401,7 @@ def main() -> None:
         print("Numba candidate reproduced all mdapy 2.2 reference cases.")
     else:
         output = benchmark(args)
-        print(f"Raw results and summary written to {output}")
+        print(f"Compact results and summary written to {output}")
 
 
 if __name__ == "__main__":

@@ -163,6 +163,7 @@ NUMBA_CPU_NAME=generic uv run --with 'numba>=0.68,<1' \
   --suite scaling --output benchmarks/experiments/numba/results/scaling
 ```
 
-Sus archivos `metadata.json` registran versiones, plataforma, semilla, cargas,
-repeticiones y hashes de ambas referencias; `compilation.json` conserva los
-costes fríos.
+Cada directorio usa el [formato compacto de experimentos](../README.md#resultados-compactos).
+`campaign.json` conserva versiones, plataforma, semilla, cargas, hashes,
+resumen y costes fríos; `measurements.jsonl` agrupa las repeticiones y
+`validations.jsonl` conserva los índices exactos sin duplicarlos por muestra.

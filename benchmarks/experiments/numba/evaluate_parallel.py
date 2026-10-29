@@ -14,6 +14,7 @@ from typing import Any
 import numpy as np
 import scipy
 
+from benchmarks.experiments.compact_results import compact_campaign
 from benchmarks.experiments.numba import evaluate as base
 
 ROOT = Path(__file__).resolve().parent
@@ -275,6 +276,7 @@ def tune(args: argparse.Namespace) -> Path:
 
     summary = summarize_tuning(records, args.thread_counts)
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    compact_campaign(output)
     return output
 
 
@@ -329,6 +331,7 @@ def compare(args: argparse.Namespace) -> Path:
     (output / "summary.json").write_text(
         json.dumps(summarize_comparison(records), indent=2) + "\n"
     )
+    compact_campaign(output)
     return output
 
 
@@ -370,7 +373,7 @@ def main() -> None:
     args = parse_args()
     base.validate(ALGORITHMS)
     output = tune(args) if args.mode == "tuning" else compare(args)
-    print(f"Raw results and summary written to {output}")
+    print(f"Compact results and summary written to {output}")
 
 
 if __name__ == "__main__":

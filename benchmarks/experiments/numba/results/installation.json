@@ -1,0 +1,15 @@
+{
+  "measured_at": "2026-10-28",
+  "method": "sum of installed distribution files reported by importlib.metadata",
+  "packages": {
+    "numba": {
+      "version": "0.68.1",
+      "installed_mib": 16.24386501312256
+    },
+    "llvmlite": {
+      "version": "0.50.0",
+      "installed_mib": 167.81088542938232
+    }
+  },
+  "combined_installed_mib": 184.05475044250488
+}
