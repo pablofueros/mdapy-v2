@@ -74,6 +74,27 @@ def test_column_api_rejects_non_boolean_progress(show_progress):
         )
 
 
+def test_numpy_is_the_default_engine():
+    columns = (DataColumn([0, 2, 5, 9]),)
+
+    default_result = max_diss_alg(*columns, n_clusters=3, seed_index=2)
+    numpy_result = max_diss_alg(
+        *columns,
+        n_clusters=3,
+        seed_index=2,
+        engine="numpy",
+    )
+
+    np.testing.assert_array_equal(default_result[0], numpy_result[0])
+    assert default_result[1] == numpy_result[1]
+
+
+@pytest.mark.parametrize("engine", ["python", "rust", "NUMPY", True, None])
+def test_column_api_rejects_unknown_engine(engine):
+    with pytest.raises(ValueError, match="engine must be either 'numpy' or 'numba'"):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=1, engine=engine)
+
+
 @pytest.mark.parametrize(
     "args, kwargs, message",
     [

@@ -13,6 +13,11 @@ dependencies = [
     "scipy>=1.11.2,<2",
 ]
 
+[project.optional-dependencies]
+numba = [
+    "numba>=0.68.1,<0.69",
+]
+
 [dependency-groups]
 dev = [
     "plotly>=7.1,<8",

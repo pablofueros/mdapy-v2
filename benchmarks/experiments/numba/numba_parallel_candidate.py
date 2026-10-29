@@ -7,7 +7,7 @@ the dependency between successive selections remain serial and deterministic.
 from dataclasses import dataclass
 
 import numpy as np
-from numba import njit, prange  # ty: ignore[unresolved-import]
+from numba import njit, prange
 from numpy.typing import NDArray
 from scipy.stats import circstd
 
