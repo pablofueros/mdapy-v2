@@ -81,7 +81,6 @@ def max_diss_alg(
     *columns: DataColumn,
     n_clusters: int,
     seed_index: int = 0,
-    show_progress: bool = False,
     engine: Literal["numpy", "numba"] = "numpy",
     **kwargs: object,
 ) -> tuple[NDArray, list[int]]:
@@ -96,8 +95,6 @@ def max_diss_alg(
         Number of observations to select.
     seed_index : int, optional
         Index of the first selected observation, by default 0.
-    show_progress : bool, optional
-        Display selection progress, by default False.
     engine : {"numpy", "numba"}, optional
         Numerical engine used for the selection, by default "numpy". The
         "numba" engine requires the optional ``numba`` installation extra and
@@ -111,6 +108,8 @@ def max_diss_alg(
         Indices of the selected observations in the original data.
     """
 
+    if "show_progress" in kwargs:
+        raise TypeError("show_progress has been removed")
     if "data_tuple" in kwargs or "dir_indices" in kwargs:
         raise TypeError(_LEGACY_HINT)
     if kwargs:
@@ -125,8 +124,6 @@ def max_diss_alg(
         raise TypeError("n_clusters must be an integer")
     if isinstance(seed_index, bool) or not isinstance(seed_index, Integral):
         raise TypeError("seed_index must be an integer")
-    if not isinstance(show_progress, bool):
-        raise TypeError("show_progress must be a bool")
     if engine not in ("numpy", "numba"):
         raise ValueError("engine must be either 'numpy' or 'numba'")
 
@@ -153,7 +150,6 @@ def max_diss_alg(
         directional,
         n_clusters,
         seed_index,
-        show_progress=show_progress,
     )
 
     return data[indices], indices

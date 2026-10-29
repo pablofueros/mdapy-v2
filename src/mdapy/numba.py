@@ -67,12 +67,9 @@ def _select_indices(
     n_clusters: int,
     seed_index: int,
     *,
-    show_progress: bool = False,
     workers: int | None = None,
 ) -> list[int]:
     """Adapt the compiled kernel to the internal NumPy core interface."""
-    if show_progress:
-        raise NotImplementedError("The Numba engine does not support progress output")
     if workers is not None:
         if isinstance(workers, bool) or not isinstance(workers, Integral):
             raise TypeError("workers must be an integer or None")

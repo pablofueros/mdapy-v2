@@ -32,8 +32,6 @@ def _select_indices(
     dir_indices: list[int] | None,
     n_clusters: int,
     seed_index: int,
-    *,
-    show_progress: bool = False,
 ) -> list[int]:
     """Update nearest distances only against the last selected observation."""
     indices = [seed_index]
@@ -60,15 +58,6 @@ def _select_indices(
         nearest[selected] = -np.inf
         # argmax returns the first input index for an exact tie, as historically.
         next_index = int(np.argmax(nearest))
-        if show_progress:
-            for point_index in range(len(data)):
-                if selected[point_index]:
-                    continue
-                progress = (point_index + 1) / len(data) * 100
-                print(
-                    f"Finding cluster nº{len(indices) + 1} --> {progress:.2f}%",
-                    end="\r",
-                )
         indices.append(next_index)
         selected[next_index] = True
 
