@@ -30,4 +30,7 @@ pequeñas y mantienen su estructura histórica mientras siga siendo manejable.
 
 - [`numba/SEQUENTIAL.md`](numba/SEQUENTIAL.md) y
   [`numba/PARALLEL.md`](numba/PARALLEL.md) estudian compilación JIT secuencial
-  y paralela.
+  y paralela;
+- [`rust/SEQUENTIAL.md`](rust/SEQUENTIAL.md) y
+  [`rust/PARALLEL.md`](rust/PARALLEL.md) estudian núcleos Rust ejecutados
+  mediante `rust-script`, sin integrarlos todavía con Python.
