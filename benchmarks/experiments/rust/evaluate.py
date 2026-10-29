@@ -17,6 +17,7 @@ from typing import Any
 
 import numpy as np
 
+from benchmarks.experiments.compact_results import compact_campaign
 from benchmarks.experiments.numba import evaluate as numba_evaluate
 from benchmarks.scale import RANDOM_SEED, SUITES, WORKLOADS, make_columns
 
@@ -442,6 +443,7 @@ def benchmark(args: argparse.Namespace) -> Path:
     (output / "summary.json").write_text(
         json.dumps(summarize(records), indent=2) + "\n"
     )
+    compact_campaign(output)
     return output
 
 
@@ -481,7 +483,7 @@ def main() -> None:
         print("Rust candidate reproduced all mdapy 2.2 reference cases.")
     else:
         output = benchmark(args)
-        print(f"Raw results and summary written to {output}")
+        print(f"Compact results and summary written to {output}")
 
 
 if __name__ == "__main__":

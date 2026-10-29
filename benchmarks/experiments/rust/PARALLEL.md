@@ -169,5 +169,6 @@ NUMBA_CPU_NAME=generic uv run --with 'numba>=0.68,<1' \
   --output benchmarks/experiments/rust/results/parallel/scaling-t4
 ```
 
-Cada directorio conserva metadatos, hashes de los cinco candidatos, muestras
-crudas, sondas de compilación y el resumen derivado.
+Cada directorio usa el [formato compacto de experimentos](../README.md#resultados-compactos)
+para conservar metadatos, hashes de los cinco candidatos, todas las muestras,
+índices exactos, sondas de compilación y el resumen sin duplicar información.

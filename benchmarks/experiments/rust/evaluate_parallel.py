@@ -15,6 +15,7 @@ from typing import Any
 
 import numpy as np
 
+from benchmarks.experiments.compact_results import compact_campaign
 from benchmarks.experiments.numba import evaluate as numba_evaluate
 from benchmarks.experiments.rust import evaluate as base
 from benchmarks.scale import RANDOM_SEED, SUITES, WORKLOADS
@@ -368,6 +369,7 @@ def tune(args: argparse.Namespace) -> Path:
     (output / "summary.json").write_text(
         json.dumps(summarize_tuning(records, args.thread_counts), indent=2) + "\n"
     )
+    compact_campaign(output)
     return output
 
 
@@ -432,6 +434,7 @@ def compare(args: argparse.Namespace) -> Path:
     (output / "summary.json").write_text(
         json.dumps(summarize_comparison(records), indent=2) + "\n"
     )
+    compact_campaign(output)
     return output
 
 
@@ -505,7 +508,7 @@ def main() -> None:
     else:
         validate(args.timeout, args.thread_counts)
         output = tune(args) if args.mode == "tuning" else compare(args)
-        print(f"Raw results and summary written to {output}")
+        print(f"Compact results and summary written to {output}")
 
 
 if __name__ == "__main__":

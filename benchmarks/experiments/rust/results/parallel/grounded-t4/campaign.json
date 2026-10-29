@@ -1,0 +1,437 @@
+{
+  "artifacts": {
+    "compilation.json": {
+      "cached_process_s": 0.0027778959993156604,
+      "cached_selection_s": 0.0001839,
+      "cold_process_s": 0.9314255520002916,
+      "cold_selection_s": 0.0001986,
+      "workload": "reference-scalar-float64"
+    },
+    "metadata.json": {
+      "algorithms": {
+        "numba_candidate": {
+          "file": "benchmarks/experiments/numba/numba_candidate.py",
+          "sha256": "875733006c98cb122025cd39aa304adb172cbdaf993c2d7aeae17116198f3d87"
+        },
+        "numba_parallel_candidate": {
+          "file": "benchmarks/experiments/numba/numba_parallel_candidate.py",
+          "sha256": "324fc1acaf80d0acc13037aae2e03fe2f339f5e697c4bbd5cd4e73ff2b511a36"
+        },
+        "rust_candidate": {
+          "file": "benchmarks/experiments/rust/rust_candidate.rs",
+          "sha256": "d5647a89b67c3bcf2c3ea7bc89695d164e1671e4232065d5c664ebeab89a36c8"
+        },
+        "rust_parallel_candidate": {
+          "file": "benchmarks/experiments/rust/rust_parallel_candidate.rs",
+          "sha256": "96ce622d65e5b53da4fdf0bc93dc74ea49714d3846fb8ca8682dbc02390dd51e"
+        },
+        "v2_2": {
+          "file": "benchmarks/algorithms/v2_2.py",
+          "sha256": "c93ffbabb4aac5042cbc43dfab3c81c04cef76c8506db6b75078adfa4eb3afec"
+        }
+      },
+      "cargo": "cargo 1.90.0 (840b83a10 2025-07-30)",
+      "comparison_threads": 4,
+      "cpu_count": 12,
+      "created_at": "2026-10-29T09:01:09.197440+00:00",
+      "machine": "aarch64",
+      "mode": "comparison",
+      "numba_cpu_name": "generic",
+      "numba_parallel_threads": 4,
+      "numpy": "1.26.0",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+      "python": "3.12.3",
+      "random_seed": 20261020,
+      "rayon": "1.12.0",
+      "rayon_core": "1.13.0",
+      "rayon_requirement": ">=1.10, <2",
+      "runs": 7,
+      "rust_script": "rust-script 0.36.0",
+      "rustc": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+      "suite": "grounded",
+      "thread_counts": [
+        1,
+        2,
+        4,
+        8,
+        12
+      ],
+      "timeout_s": 900.0,
+      "workloads": {
+        "grounded-castro-k100": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 100
+        },
+        "grounded-castro-k1000": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 1000
+        },
+        "grounded-castro-k5000": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 5000
+        },
+        "grounded-datawave-k100": {
+          "dataset": "datawave",
+          "selections": 100
+        },
+        "grounded-datawave-k20": {
+          "dataset": "datawave",
+          "selections": 20
+        },
+        "grounded-directional-k600": {
+          "columns": 3,
+          "directional": 1,
+          "rows": 87664,
+          "selections": 600
+        },
+        "grounded-franklin-k600": {
+          "columns": 3,
+          "rows": 87664,
+          "selections": 600
+        },
+        "grounded-ncsu-k1250": {
+          "columns": 3,
+          "rows": 1000000,
+          "selections": 1250
+        },
+        "grounded-tudelft-k1000": {
+          "columns": 3,
+          "rows": 10000,
+          "selections": 1000
+        }
+      }
+    },
+    "summary.json": {
+      "workloads": {
+        "grounded-castro-k100": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.15620214200316695,
+            "hot_selection_median_s": 0.04482437299884623,
+            "preparation_median_s": 0.004832351994991768,
+            "process_median_s": 0.7697332869938691
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.16407910700218054,
+            "hot_selection_median_s": 0.015749830003187526,
+            "preparation_median_s": 0.004664257001422811,
+            "process_median_s": 0.7433955109954695
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.048446967,
+            "hot_selection_median_s": 0.04640411,
+            "preparation_median_s": 0.0024266370019176975,
+            "process_median_s": 0.4641461020000861
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.056787015,
+            "hot_selection_median_s": 0.044427124,
+            "preparation_median_s": 0.0024086780031211674,
+            "process_median_s": 0.4550249980020453
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.008941587099949,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.3545093309030656,
+          "rust_parallel_speedup_vs_rust_candidate": 1.0444995269106323,
+          "rust_parallel_speedup_vs_v2_2": 3.25387965694547,
+          "v2_2": {
+            "first_selection_median_s": 0.14456051500019385,
+            "hot_selection_median_s": 0.14456051500019385,
+            "preparation_median_s": 0.0022584149992326275,
+            "process_median_s": 0.5021266729963827
+          }
+        },
+        "grounded-castro-k1000": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.5901663010008633,
+            "hot_selection_median_s": 0.4579633390021627,
+            "preparation_median_s": 0.004269759003364015,
+            "process_median_s": 1.6015422170021338
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.2952850319998106,
+            "hot_selection_median_s": 0.15543845500360476,
+            "preparation_median_s": 0.004666821005230304,
+            "process_median_s": 1.043023906997405
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.465461628,
+            "hot_selection_median_s": 0.463131283,
+            "preparation_median_s": 0.0026827309993677773,
+            "process_median_s": 1.313361040003656
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.430736521,
+            "hot_selection_median_s": 0.375465893,
+            "preparation_median_s": 0.0032588110043434426,
+            "process_median_s": 1.197744238001178
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.2197202130478537,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.41398821544519027,
+          "rust_parallel_speedup_vs_rust_candidate": 1.2334842968013608,
+          "rust_parallel_speedup_vs_v2_2": 3.918254023677745,
+          "v2_2": {
+            "first_selection_median_s": 1.4711707460010075,
+            "hot_selection_median_s": 1.4711707460010075,
+            "preparation_median_s": 0.00316241000109585,
+            "process_median_s": 1.8390018220015918
+          }
+        },
+        "grounded-castro-k5000": {
+          "numba_candidate": {
+            "first_selection_median_s": 2.5143178129947046,
+            "hot_selection_median_s": 2.39501593499881,
+            "preparation_median_s": 0.002563349000411108,
+            "process_median_s": 5.494972376996884
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 1.0377071149996482,
+            "hot_selection_median_s": 0.8797794899946894,
+            "preparation_median_s": 0.0027971849995083176,
+            "process_median_s": 2.532835862999491
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 2.373778502,
+            "hot_selection_median_s": 2.356492925,
+            "preparation_median_s": 0.002639752005052287,
+            "process_median_s": 5.088406176000717
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 2.004108695,
+            "hot_selection_median_s": 1.894530404,
+            "preparation_median_s": 0.0023834740059101023,
+            "process_median_s": 4.26611406399752
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.2641739240194374,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.46437865981837756,
+          "rust_parallel_speedup_vs_rust_candidate": 1.2438401199709646,
+          "rust_parallel_speedup_vs_v2_2": 3.921766033053908,
+          "v2_2": {
+            "first_selection_median_s": 7.429904986995098,
+            "hot_selection_median_s": 7.429904986995098,
+            "preparation_median_s": 0.002656234006281011,
+            "process_median_s": 7.82831379500567
+          }
+        },
+        "grounded-datawave-k100": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.19295807099842932,
+            "hot_selection_median_s": 0.08244726300472394,
+            "preparation_median_s": 0.0070254879974527285,
+            "process_median_s": 0.8513860589955584
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.1758648839968373,
+            "hot_selection_median_s": 0.026505863999773283,
+            "preparation_median_s": 0.006518864000099711,
+            "process_median_s": 0.7720068829949014
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.086379986,
+            "hot_selection_median_s": 0.082562796,
+            "preparation_median_s": 0.005759096005931497,
+            "process_median_s": 0.5296545730016078
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.063297368,
+            "hot_selection_median_s": 0.054906528,
+            "preparation_median_s": 0.005778355996881146,
+            "process_median_s": 0.47136478199536214
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.5015930893449305,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.48274522111056234,
+          "rust_parallel_speedup_vs_rust_candidate": 1.5036972652869252,
+          "rust_parallel_speedup_vs_v2_2": 5.712322640357642,
+          "v2_2": {
+            "first_selection_median_s": 0.3136438029978308,
+            "hot_selection_median_s": 0.3136438029978308,
+            "preparation_median_s": 0.006963861997064669,
+            "process_median_s": 0.6600226020018454
+          }
+        },
+        "grounded-datawave-k20": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.13117063700337894,
+            "hot_selection_median_s": 0.016215372997976374,
+            "preparation_median_s": 0.007949601000291295,
+            "process_median_s": 0.7281511690016487
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.13707996300217928,
+            "hot_selection_median_s": 0.010297700995579362,
+            "preparation_median_s": 0.007177830004366115,
+            "process_median_s": 0.7262215700029628
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.016721302,
+            "hot_selection_median_s": 0.016596902,
+            "preparation_median_s": 0.00606620100006694,
+            "process_median_s": 0.4201005430004443
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.019788382,
+            "hot_selection_median_s": 0.013080681,
+            "preparation_median_s": 0.007021529003395699,
+            "process_median_s": 0.41578164199745515
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.2396428747078514,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.787245021538203,
+          "rust_parallel_speedup_vs_rust_candidate": 1.268810240078479,
+          "rust_parallel_speedup_vs_v2_2": 4.632235890505215,
+          "v2_2": {
+            "first_selection_median_s": 0.06059280000044964,
+            "hot_selection_median_s": 0.06059280000044964,
+            "preparation_median_s": 0.00807413399888901,
+            "process_median_s": 0.44719833999988623
+          }
+        },
+        "grounded-directional-k600": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.5786808690027101,
+            "hot_selection_median_s": 0.4760734119990957,
+            "preparation_median_s": 0.006123876999481581,
+            "process_median_s": 1.6375012839998817
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.25695277899649227,
+            "hot_selection_median_s": 0.12193903799925465,
+            "preparation_median_s": 0.005439790998934768,
+            "process_median_s": 0.9758600349960034
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.401575046,
+            "hot_selection_median_s": 0.402412653,
+            "preparation_median_s": 0.005895590002182871,
+            "process_median_s": 1.1737505700002657
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.238180068,
+            "hot_selection_median_s": 0.224614039,
+            "preparation_median_s": 0.004521155999100301,
+            "process_median_s": 0.84116773900314
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 2.1195176139417344,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.542882531039187,
+          "rust_parallel_speedup_vs_rust_candidate": 1.7915739140419449,
+          "rust_parallel_speedup_vs_v2_2": 5.316061909208225,
+          "v2_2": {
+            "first_selection_median_s": 1.1940621370013105,
+            "hot_selection_median_s": 1.1940621370013105,
+            "preparation_median_s": 0.005395565000071656,
+            "process_median_s": 1.541054573994188
+          }
+        },
+        "grounded-franklin-k600": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.32358422199467896,
+            "hot_selection_median_s": 0.19293131599988556,
+            "preparation_median_s": 0.0022547140033566393,
+            "process_median_s": 1.1092049189974205
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.21092121899710037,
+            "hot_selection_median_s": 0.06888717399851885,
+            "preparation_median_s": 0.004382522005471401,
+            "process_median_s": 0.8465496110002277
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.202720839,
+            "hot_selection_median_s": 0.194354937,
+            "preparation_median_s": 0.0016720720013836399,
+            "process_median_s": 0.7633697839992237
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.19827343,
+            "hot_selection_median_s": 0.169073254,
+            "preparation_median_s": 0.0016839189993334003,
+            "process_median_s": 0.7155328250009916
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.1411107992272127,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.4074398071176819,
+          "rust_parallel_speedup_vs_rust_candidate": 1.1495309423689213,
+          "rust_parallel_speedup_vs_v2_2": 3.713403268368218,
+          "v2_2": {
+            "first_selection_median_s": 0.6278371739972499,
+            "hot_selection_median_s": 0.6278371739972499,
+            "preparation_median_s": 0.001756598001520615,
+            "process_median_s": 0.9798766439998872
+          }
+        },
+        "grounded-ncsu-k1250": {
+          "numba_candidate": {
+            "first_selection_median_s": 4.808631056002923,
+            "hot_selection_median_s": 4.692647554002178,
+            "preparation_median_s": 0.019919899001251906,
+            "process_median_s": 10.080498095994699
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 2.009141331000137,
+            "hot_selection_median_s": 1.8865291129986872,
+            "preparation_median_s": 0.024824141000863165,
+            "process_median_s": 4.540009225005633
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 4.666531244,
+            "hot_selection_median_s": 4.663284742,
+            "preparation_median_s": 0.018615059001604095,
+            "process_median_s": 9.812903010002628
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 2.41633287,
+            "hot_selection_median_s": 2.413204349,
+            "preparation_median_s": 0.017337559998850338,
+            "process_median_s": 5.267941874000826
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.9445711491224311,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.7817527404094229,
+          "rust_parallel_speedup_vs_rust_candidate": 1.932403587757665,
+          "rust_parallel_speedup_vs_v2_2": 6.311101427574873,
+          "v2_2": {
+            "first_selection_median_s": 15.229977412003791,
+            "hot_selection_median_s": 15.229977412003791,
+            "preparation_median_s": 0.016494656003487762,
+            "process_median_s": 15.679215655996813
+          }
+        },
+        "grounded-tudelft-k1000": {
+          "numba_candidate": {
+            "first_selection_median_s": 0.14912264199665515,
+            "hot_selection_median_s": 0.037954059000185225,
+            "preparation_median_s": 0.00032000400096876547,
+            "process_median_s": 0.7557809919962892
+          },
+          "numba_parallel_candidate": {
+            "first_selection_median_s": 0.14932515200052876,
+            "hot_selection_median_s": 0.016110643002321012,
+            "preparation_median_s": 0.0003016050031874329,
+            "process_median_s": 0.7313528609956848
+          },
+          "rust_candidate": {
+            "first_selection_median_s": 0.034999564,
+            "hot_selection_median_s": 0.037430106,
+            "preparation_median_s": 0.00028259299870114774,
+            "process_median_s": 0.4168797390011605
+          },
+          "rust_parallel_candidate": {
+            "first_selection_median_s": 0.04272709,
+            "hot_selection_median_s": 0.033850178,
+            "preparation_median_s": 0.00027910400240216404,
+            "process_median_s": 0.4184638239967171
+          },
+          "rust_parallel_speedup_vs_numba_candidate": 1.121236615068471,
+          "rust_parallel_speedup_vs_numba_parallel_candidate": 0.4759396834581198,
+          "rust_parallel_speedup_vs_rust_candidate": 1.1057580258514443,
+          "rust_parallel_speedup_vs_v2_2": 3.426015809881639,
+          "v2_2": {
+            "first_selection_median_s": 0.11597124499530764,
+            "hot_selection_median_s": 0.11597124499530764,
+            "preparation_median_s": 0.0003444050016696565,
+            "process_median_s": 0.4603226289982558
+          }
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}

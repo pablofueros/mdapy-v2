@@ -185,5 +185,8 @@ NUMBA_CPU_NAME=generic uv run --with 'numba>=0.68,<1' \
 ```
 
 Los metadatos conservan plataforma, toolchains, semillas, cargas, repeticiones y
-hashes de los cuatro candidatos. Los archivos JSONL contienen las muestras
-crudas y `compilation.json` separa compilación fría y ejecución cacheada.
+hashes de los cuatro candidatos. Cada directorio usa el
+[formato compacto de experimentos](../README.md#resultados-compactos):
+`campaign.json` reúne los metadatos, la compilación y el resumen;
+`measurements.jsonl` agrupa las muestras y `validations.jsonl` conserva los
+índices exactos sin repetirlos por ejecución.
