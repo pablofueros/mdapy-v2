@@ -1,13 +1,13 @@
 """Column-based API for selecting maximally dissimilar observations."""
 
+from collections.abc import Callable
 from functools import cached_property
 from numbers import Integral
+from typing import Literal
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from scipy.stats import circstd
-
-from .core import _select_indices
 
 
 class DataColumn:
@@ -55,11 +55,34 @@ _LEGACY_HINT = (
 )
 
 
+def _get_select_indices(
+    engine: Literal["numpy", "numba"],
+) -> Callable[..., list[int]]:
+    """Load the internal selection function for the requested engine."""
+    if engine == "numpy":
+        from .core import _select_indices
+
+        return _select_indices
+
+    try:
+        from .numba import _select_indices
+    except ModuleNotFoundError as error:
+        if error.name != "numba":
+            raise
+        raise ImportError(
+            "The Numba engine requires the optional dependency. Install it "
+            'with: pip install "mdapy-v2[numba]"'
+        ) from error
+
+    return _select_indices
+
+
 def max_diss_alg(
     *columns: DataColumn,
     n_clusters: int,
     seed_index: int = 0,
     show_progress: bool = False,
+    engine: Literal["numpy", "numba"] = "numpy",
     **kwargs: object,
 ) -> tuple[NDArray, list[int]]:
     """Select maximally dissimilar observations.
@@ -75,6 +98,10 @@ def max_diss_alg(
         Index of the first selected observation, by default 0.
     show_progress : bool, optional
         Display selection progress, by default False.
+    engine : {"numpy", "numba"}, optional
+        Numerical engine used for the selection, by default "numpy". The
+        "numba" engine requires the optional ``numba`` installation extra and
+        is intended for large or repeated selections.
 
     Returns
     -------
@@ -100,6 +127,8 @@ def max_diss_alg(
         raise TypeError("seed_index must be an integer")
     if not isinstance(show_progress, bool):
         raise TypeError("show_progress must be a bool")
+    if engine not in ("numpy", "numba"):
+        raise ValueError("engine must be either 'numpy' or 'numba'")
 
     n_points = len(columns[0])
     if any(len(col) != n_points for col in columns):
@@ -117,7 +146,8 @@ def max_diss_alg(
     data = np.column_stack(tuple(col.values for col in columns))
     directional = [i for i, col in enumerate(columns) if col.directional]
 
-    indices = _select_indices(
+    select_indices = _get_select_indices(engine)
+    indices = select_indices(
         data,
         deviations,
         directional,

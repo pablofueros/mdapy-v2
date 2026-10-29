@@ -22,7 +22,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Install dependencies
-        run: uv sync --frozen
+        run: uv sync --frozen --extra numba
       - name: Generate coverage report
         run: uv run --frozen pytest --cov=mdapy --cov-report=term-missing --cov-report=xml
       - name: Upload coverage to Codecov

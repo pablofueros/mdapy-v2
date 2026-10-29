@@ -1,7 +1,7 @@
 .PHONY: install format lint test
 
 install:
-	uv sync --locked
+	uv sync --locked --extra numba
 	uvx prek install
 
 format:
