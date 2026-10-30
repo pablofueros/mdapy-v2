@@ -20,6 +20,19 @@ jobs:
         uses: astral-sh/setup-uv@v7
       - name: Check lock file
         run: uv lock --check
+  base-installation:
+    name: Base installation
+    runs-on: ubuntu-latest
+    needs: dependencies
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install base package
+        run: uv sync --frozen --no-dev
+      - name: Check behavior without Numba
+        run: uv run --frozen --no-dev python tests/check_base_install.py
   linting:
     name: Linting and types
     runs-on: ubuntu-latest

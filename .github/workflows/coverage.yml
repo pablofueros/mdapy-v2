@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen --extra numba
       - name: Generate coverage report
+        env:
+          NUMBA_CACHE_DIR: ${{ runner.temp }}/numba-coverage-cache
+          NUMBA_JIT_COVERAGE: "1"
         run: uv run --frozen pytest --cov=mdapy --cov-report=term-missing --cov-report=xml
       - name: Upload coverage to Codecov
         if: ${{ runner.environment == 'github-hosted' }}

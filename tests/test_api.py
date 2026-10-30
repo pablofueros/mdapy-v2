@@ -1,3 +1,7 @@
+import builtins
+import sys
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -151,6 +155,17 @@ def test_column_rejects_non_real_numeric_dtypes(values):
         DataColumn(values)
 
 
+def test_column_rejects_non_boolean_directional_flag():
+    directional: Any = 1
+    with pytest.raises(TypeError, match="directional must be a bool"):
+        DataColumn([0, 1], directional=directional)
+
+
+def test_column_rejects_non_one_dimensional_values():
+    with pytest.raises(ValueError, match="one-dimensional"):
+        DataColumn([[0, 1], [2, 3]])
+
+
 @pytest.mark.parametrize("directional", [False, True])
 def test_api_rejects_zero_deviation(directional):
     column = DataColumn([1, 1], directional=directional)
@@ -192,3 +207,63 @@ def test_real_numeric_dtypes_preserve_stored_values(dtype):
     assert indices == [0, 2, 1]
     assert selected.dtype == values.dtype
     np.testing.assert_array_equal(selected[:, 0], values[indices])
+
+
+def test_column_api_requires_at_least_one_column():
+    with pytest.raises(ValueError, match="At least one DataColumn"):
+        max_diss_alg(n_clusters=1)
+
+
+@pytest.mark.parametrize("n_clusters", [True, 1.5, "1"])
+def test_column_api_rejects_non_integer_cluster_count(n_clusters):
+    with pytest.raises(TypeError, match="n_clusters must be an integer"):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=n_clusters)
+
+
+@pytest.mark.parametrize("seed_index", [True, 1.5, "1"])
+def test_column_api_rejects_non_integer_seed_index(seed_index):
+    with pytest.raises(TypeError, match="seed_index must be an integer"):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=1, seed_index=seed_index)
+
+
+@pytest.mark.parametrize("seed_index", [-1, 2])
+def test_column_api_rejects_out_of_bounds_seed_index(seed_index):
+    with pytest.raises(ValueError, match="seed_index is out of bounds"):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=1, seed_index=seed_index)
+
+
+def test_column_api_rejects_unexpected_keyword_argument():
+    with pytest.raises(TypeError, match="Unexpected keyword argument: workers"):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=1, workers=1)
+
+
+def test_numba_engine_explains_how_to_install_optional_dependency(monkeypatch):
+    real_import = builtins.__import__
+    monkeypatch.delitem(sys.modules, "mdapy.numba", raising=False)
+
+    def import_without_numba(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == "numba":
+            raise ModuleNotFoundError("No module named 'numba'", name="numba")
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", import_without_numba)
+
+    with pytest.raises(ImportError, match=r'pip install "mdapy-v2\[numba\]"'):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=1, engine="numba")
+
+
+def test_numba_engine_preserves_unexpected_import_errors(monkeypatch):
+    real_import = builtins.__import__
+    monkeypatch.delitem(sys.modules, "mdapy.numba", raising=False)
+
+    def import_with_broken_numba_dependency(
+        name, globals=None, locals=None, fromlist=(), level=0
+    ):
+        if name == "numba":
+            raise ModuleNotFoundError("No module named 'llvmlite'", name="llvmlite")
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", import_with_broken_numba_dependency)
+
+    with pytest.raises(ModuleNotFoundError, match="llvmlite"):
+        max_diss_alg(DataColumn([0, 1]), n_clusters=1, engine="numba")
