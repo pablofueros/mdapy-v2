@@ -1,19 +1,20 @@
 """Column-based API for selecting maximally dissimilar observations."""
 
+from collections.abc import Callable
 from functools import cached_property
 from numbers import Integral
+from typing import Literal
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from scipy.stats import circstd
 
-from .core import _select_indices
-
 
 class DataColumn:
     """A stable copy of one variable, optionally interpreted as degrees.
 
-    Data and directional interpretation are read-only through the public API,
+    Values must have a real integer or floating-point dtype. Their original
+    dtype and directional interpretation are read-only through the public API,
     so the cached standard deviation remains consistent with the column.
     """
 
@@ -23,6 +24,8 @@ class DataColumn:
             raise TypeError("directional must be a bool")
         if values.ndim != 1:
             raise ValueError("Each data column must be one-dimensional")
+        if values.dtype.kind not in "iuf":
+            raise TypeError("Data columns must have a real numeric dtype")
         if not np.isfinite(values).all():
             raise ValueError("Data columns must contain only finite values")
         self._values = values.copy()
@@ -44,9 +47,10 @@ class DataColumn:
 
     @cached_property
     def standard_deviation(self) -> float:
+        values = self.values.astype(np.float64, copy=False)
         if self.directional:
-            return float(circstd(self.values, high=360, low=0))
-        return float(np.std(self.values))
+            return float(circstd(values, high=360, low=0))
+        return float(np.std(values))
 
 
 _LEGACY_HINT = (
@@ -55,11 +59,34 @@ _LEGACY_HINT = (
 )
 
 
+def _get_select_indices(
+    engine: Literal["numpy", "numba"],
+) -> Callable[..., list[int]]:
+    """Load the internal selection function for the requested engine."""
+    if engine == "numpy":
+        from .core import _select_indices
+
+        return _select_indices
+
+    try:
+        from .numba import _select_indices
+    except ModuleNotFoundError as error:
+        if error.name != "numba":
+            raise
+        raise ImportError(
+            "The Numba engine requires the optional dependency. Install it "
+            'with: pip install "mdapy-v2[numba]"'
+        ) from error
+
+    return _select_indices
+
+
 def max_diss_alg(
     *columns: DataColumn,
     n_clusters: int,
     seed_index: int = 0,
     show_progress: bool = False,
+    engine: Literal["numpy", "numba"] = "numpy",
     **kwargs: object,
 ) -> tuple[NDArray, list[int]]:
     """Select maximally dissimilar observations.
@@ -74,7 +101,12 @@ def max_diss_alg(
     seed_index : int, optional
         Index of the first selected observation, by default 0.
     show_progress : bool, optional
-        Display selection progress, by default False.
+        Accepted for backward compatibility and currently ignored, by default
+        False.
+    engine : {"numpy", "numba"}, optional
+        Numerical engine used for the selection, by default "numpy". The
+        "numba" engine requires the optional ``numba`` installation extra and
+        is intended for large or repeated selections.
 
     Returns
     -------
@@ -82,6 +114,11 @@ def max_diss_alg(
         Selected observations in selection order.
     selected_indices : list[int]
         Indices of the selected observations in the original data.
+
+    Notes
+    -----
+    Selection calculations use ``float64``. The returned observations retain
+    the common NumPy dtype of the input columns.
     """
 
     if "data_tuple" in kwargs or "dir_indices" in kwargs:
@@ -100,6 +137,8 @@ def max_diss_alg(
         raise TypeError("seed_index must be an integer")
     if not isinstance(show_progress, bool):
         raise TypeError("show_progress must be a bool")
+    if engine not in ("numpy", "numba"):
+        raise ValueError("engine must be either 'numpy' or 'numba'")
 
     n_points = len(columns[0])
     if any(len(col) != n_points for col in columns):
@@ -115,15 +154,16 @@ def max_diss_alg(
             raise ValueError(f"Column {index} has zero or undefined deviation")
 
     data = np.column_stack(tuple(col.values for col in columns))
+    calculation_data = data.astype(np.float64, copy=False)
     directional = [i for i, col in enumerate(columns) if col.directional]
 
-    indices = _select_indices(
-        data,
+    select_indices = _get_select_indices(engine)
+    indices = select_indices(
+        calculation_data,
         deviations,
         directional,
         n_clusters,
         seed_index,
-        show_progress=show_progress,
     )
 
     return data[indices], indices

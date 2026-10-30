@@ -1,5 +1,15 @@
 # Resultados
 
+> Las exploraciones de Numba y Rust para 2.3 se conservan por separado en
+> [`experiments/`](experiments/README.md). Este documento mantiene las mediciones
+> históricas de 2.2 y añade la comparación de las referencias 2.2 y 2.3.
+
+Todas las campañas usan un contrato compacto común: `campaign.json` conserva
+los metadatos y resúmenes, `measurements.jsonl` agrupa las repeticiones y
+`validations.jsonl` guarda cada secuencia de índices una sola vez. Las campañas
+anteriores a 2.3 se migraron mecánicamente y conservan la procedencia de sus
+archivos originales.
+
 ## 2.0 frente a 2.1
 
 Se comparan `v2.0.0` y `v2.1.0`, los últimos parches disponibles de ambas
@@ -37,7 +47,7 @@ Se midieron 5, 10 y 20 selecciones, con cinco procesos independientes por carga
 y un límite de 180 segundos por proceso.
 
 ```bash
-uv run benchmarks/run.py --counts 5 10 20 --runs 5 --timeout 180 \
+uv run python -m benchmarks.run --counts 5 10 20 --runs 5 --timeout 180 \
   --output benchmarks/results/v2_0-v2_1
 ```
 
@@ -120,7 +130,7 @@ beneficio al mover un eje cada vez, no si las cargas representaban usos reales
 completos.
 
 ```bash
-uv run python benchmarks/scale.py --runs 7 --timeout 180 \
+uv run python -m benchmarks.scale --runs 7 --timeout 180 \
   --output benchmarks/results/v2_1-v2_2-scaling
 ```
 
@@ -162,7 +172,7 @@ sobre WSL2 ARM64, con 12 CPU lógicas, Python 3.12.3, NumPy 1.26.0 y SciPy
 el orden de 2.1 y 2.2.
 
 ```bash
-uv run python benchmarks/scale.py --suite grounded --runs 5 --timeout 900 \
+uv run python -m benchmarks.scale --suite grounded --runs 5 --timeout 900 \
   --output benchmarks/results/v2_1-v2_2-grounded
 ```
 
@@ -225,3 +235,113 @@ memoria. Numba y cualquier cambio de API quedan fuera de esta subfase.
 Los tiempos pertenecen a este equipo y a datos mayoritariamente sintéticos. No
 deben extrapolarse directamente a otros entornos, distribuciones de datos o
 implementaciones de MDA.
+
+## Referencia NumPy 2.2 frente a Numba 2.3
+
+### Objetivo y protocolo
+
+Los experimentos previos sirvieron para elegir la forma del núcleo y estudiar
+el número de hilos. Esta campaña no vuelve a comparar prototipos: compara las
+referencias independientes de los motores NumPy 2.2 y Numba 2.3. Antes de medir,
+ambas referencias se contrastan con la API pública
+`mdapy.max_diss_alg(..., engine=...)` del checkout actual.
+
+Se eligieron tres cargas para representar comportamientos distintos:
+
+- `columns-d1`: 100.000 filas, una columna y 20 selecciones; una carga pequeña
+  para la que el coste fijo de Numba debe quedar visible.
+- `grounded-datawave-k100`: las 140.256 filas y tres variables de `datawave`,
+  con 100 selecciones.
+- `grounded-castro-k5000`: 121.968 filas sintéticas, tres variables y 5.000
+  selecciones; una carga pesada basada en una escala publicada.
+
+Cada combinación de carga y motor se ejecutó cinco veces en procesos aislados,
+alternando el orden de los motores. En cada proceso se midió una primera llamada
+y una segunda llamada caliente con los mismos datos. La campaña utilizó una caché
+temporal de Numba compartida entre procesos; antes de las mediciones se ejecutaron
+sondas separadas con caché vacía y caliente para no confundir compilación, carga
+de código compilado y ejecución repetida.
+
+La medición se realizó el **30 de octubre de 2026** en Linux sobre WSL2 ARM64,
+con 12 CPU lógicas, Python 3.12.3, NumPy 1.26.0, SciPy 1.15.1, Numba 0.68.1 y
+llvmlite 0.50.0. Se fijaron externamente `NUMBA_NUM_THREADS=12` y
+`NUMBA_CPU_NAME=generic`; la primera variable hace explícito el número de hilos
+OpenMP y la segunda mantiene la compatibilidad con LLVM en esta máquina. La
+biblioteca no modifica ninguna de ellas.
+
+```bash
+NUMBA_CPU_NAME=generic NUMBA_NUM_THREADS=12 \
+  uv run python -m benchmarks.numba --runs 5 \
+  --workloads columns-d1 grounded-datawave-k100 grounded-castro-k5000 \
+  --output benchmarks/results/v2_2-v2_3
+```
+
+[Resultados compactos, entorno y muestras](results/v2_2-v2_3/)
+
+### Coste frío de Numba
+
+La primera especialización incluye la compilación JIT. Como todos los cálculos
+de 2.3 usan `float64`, los distintos dtypes de entrada comparten el mismo núcleo
+compilado. La sonda utilizó 100.000 filas, tres columnas y 5 selecciones.
+`Primera sin caché` parte de un directorio vacío; `primera con caché` arranca
+otro proceso y carga el código ya compilado; `caliente` es la segunda llamada
+dentro de ese proceso.
+
+| Dtype | Primera sin caché (s) | Primera con caché (s) | Caliente (s) | Proceso sin caché (s) | Proceso con caché (s) |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| `float64` | 1,038 | 0,218 | 0,010 | 1,579 | 0,658 |
+
+La caché reduce mucho el coste entre procesos, pero no lo elimina: todavía hay
+que importar Numba y cargar la especialización. Por eso el motor no resulta
+adecuado para una única carga pequeña aunque el núcleo compilado sea rápido.
+
+### Rendimiento de las referencias
+
+Los tiempos son medianas. `Primera` carga la referencia, prepara los datos y
+selecciona con la caché de disco ya disponible; `caliente` repite preparación y
+selección con el módulo y la especialización cargados. La aceleración divide el
+tiempo caliente de NumPy entre el de Numba.
+
+| Carga | NumPy primera (s) | Numba primera (s) | NumPy caliente (s) | Numba caliente (s) | Aceleración caliente |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| `columns-d1` | 0,0061 | 0,2263 | 0,0047 | 0,0131 | 0,36× |
+| `grounded-datawave-k100` | 0,3261 | 0,2977 | 0,2690 | 0,0606 | 4,44× |
+| `grounded-castro-k5000` | 7,6558 | 1,4265 | 7,5952 | 0,9443 | 8,04× |
+
+En la carga de una columna, Numba fue unas 37 veces más lento en la primera
+llamada y 2,78 veces más lento en caliente. En `datawave`, la primera llamada
+quedó próxima y la repetición ahorró 0,208 segundos. En la carga de 5.000
+selecciones, Numba fue 5,37 veces más rápido en la primera llamada y 8,04 veces
+en caliente, con ahorros de 6,23 y 6,65 segundos respectivamente.
+
+El tiempo total mediano del proceso fue 0,416 frente a 0,740 segundos en la
+carga pequeña, 0,990 frente a 0,831 segundos en `datawave` y 15,625 frente a
+2,862 segundos en la carga pesada, siempre en orden NumPy frente a Numba. Esto
+incluye arranque, imports, datos y ambas llamadas.
+
+La diferencia de RSS máximo mediano quedó por debajo del 0,6 % en las tres
+cargas. Esto no demuestra una reducción de memoria frente a NumPy: el RSS
+corresponde al proceso completo y no a una medición aislada de los buffers del
+núcleo.
+
+### Corrección y decisión
+
+Las referencias NumPy y Numba produjeron exactamente los mismos índices, en el
+mismo orden, y el mismo hash de los datos seleccionados en las 30 ejecuciones
+medidas. También se compararon las dos referencias y los dos motores públicos
+con los nueve casos de [`cases.json`](cases.json), tanto en `float32` como en
+`float64`. Se cubrieron empates, duplicados, casi empates y variables
+direccionales; no se aplicaron tolerancias a los índices.
+
+Los resultados respaldan mantener NumPy como motor predeterminado: evita una
+dependencia y un coste fijo que perjudican claramente las cargas pequeñas. Numba
+aporta valor como optimización opcional y explícita para cargas grandes o llamadas
+repetidas. La API no expone el número de hilos en esta primera versión; Numba
+respeta su configuración externa. En esta máquina, usar los 12 hilos fijados no
+siempre fue la configuración experimental más rápida, pero mantiene el contrato
+sencillo y conserva una mejora amplia en la carga pesada.
+
+Esta comparación se limita a un entorno ARM64, tres cargas y dos dtypes. Los
+tiempos no establecen un umbral automático entre motores ni deben extrapolarse a
+otros equipos. La decisión queda en manos del usuario mediante `engine="numpy"`
+o `engine="numba"`, sin selección automática ni fallback silencioso.

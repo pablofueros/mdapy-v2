@@ -31,7 +31,8 @@ def max_diss_alg(
     dir_indices : list[int] or None, optional
         Indices of arrays containing angles in degrees, by default None.
     show_progress : bool, optional
-        Display selection progress, by default False.
+        Accepted for backward compatibility and currently ignored, by default
+        False.
 
     Returns
     -------

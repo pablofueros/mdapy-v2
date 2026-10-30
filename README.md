@@ -38,6 +38,13 @@ public API, correctness checks, examples, and performance of the algorithm.
 uv pip install mdapy-v2
 ```
 
+Install the optional Numba engine if you want to accelerate large or repeated
+selections:
+
+```bash
+uv pip install "mdapy-v2[numba]"
+```
+
 The distribution name changed, but the import remains short and familiar:
 
 ```python
@@ -78,6 +85,22 @@ points, indices = max_diss_alg(
 )
 ```
 
+### Optional Numba engine
+
+After installing the `numba` extra, select the compiled engine explicitly:
+
+```python
+points, indices = max_diss_alg(
+    DataColumn(tp),
+    DataColumn(hs),
+    n_clusters=3,
+    engine="numba",
+)
+```
+
+NumPy remains the default. See [Numba acceleration](#numba-acceleration) for
+performance guidance.
+
 ## How it works
 
 The implementation follows the formulation described in
@@ -94,42 +117,74 @@ Distances are Euclidean after normalizing each variable by its standard
 deviation. Directional variables use the shortest angular distance and a
 circular standard deviation. Exact ties preserve input order.
 
+`DataColumn` accepts finite real integer and floating-point arrays. It rejects
+boolean, complex and non-numeric dtypes. Stored values and selected output keep
+their input or common NumPy dtype, while deviations and distances are always
+calculated in `float64` so that both numerical engines follow the same overflow
+and promotion rules. Consequently, integer values beyond the exact precision
+of `float64` and extended-precision floats may lose distinctions during
+selection even though the returned values retain their original dtype.
+
 ## Performance
 
-The benchmark suite preserves one numerical reference for each significant
-algorithm evolution, using its latest available patch. Reference cases verify
-the exact selected indices before any timing is recorded.
+Benchmarks require exact selected indices before recording timings. The chart
+at the top labels the preserved 2.0 reference as `ihc-mdapy` because it uses
+the same selection algorithm as the latest published release, adapted to the
+current API. It compares that reference with the default NumPy engine introduced
+in version 2.2 on the same `datawave` workload and environment.
 
-For readability, the chart labels the preserved 2.0 reference as `ihc-mdapy`:
-it uses the same selection algorithm as the latest published `ihc-mdapy`
-release, adapted to the current API. The `mdapy-v2` bar uses the latest and fastest available reference. Both measured the same `datawave` workload in the same software and hardware environment.
+Most of the improvement came from maintaining incremental minimum distances
+instead of repeatedly scanning the selected subset and growing a pair cache.
+Version 2.2 then reduced the cost of each selection by reusing buffers and
+comparing squared distances. With 140,256 observations and 20 selections, the
+median complete call decreased from 32.63 seconds to 0.067 seconds.
 
-Version 2.1 replaced repeated subset scans and a growing pair cache with
-incremental minimum distances. In the documented `datawave` experiment with
-20 selections, the complete call decreased from 32.63 seconds to 0.086 seconds
-and peak RSS from 507 MiB to 118 MiB. These figures describe one environment
-and workload, not a universal speedup.
+Version 2.3 keeps this NumPy engine as the default and adds Numba as an explicit
+option for workloads where saving seconds justifies its compilation cost. These
+measurements describe one workload and environment, not a universal speedup.
+See the [benchmark results](benchmarks/RESULTS.md) for the complete protocol,
+reproduction commands, and raw data.
 
-Version 2.2 keeps the same algorithmic complexity and public API, but reduces
-the cost of each selection by reusing NumPy buffers and comparing squared
-distances. Across the documented workloads, complete calls improved by 1.10×
-to 1.56× while preserving the exact selected indices. The largest measured
-workload saved 7.64 seconds and reduced peak RSS by 12.7%.
+## Numba acceleration
 
-See the complete protocol, limitations, and raw measurements in the
-[benchmark results](benchmarks/RESULTS.md).
+NumPy remains the best starting point for small or one-off selections. Choose
+Numba explicitly when a selection already takes seconds or when a large
+workload is repeated. `mdapy` does not switch automatically because the payoff
+depends on the number of rows, variables and selections, as well as the CPU.
 
-`run.py` runs the compact `datawave` benchmark, while `scale.py` compares
-versions 2.1 and 2.2 across broader scaling workloads. Both validate the
-preserved references before recording timings and write their results to a new
-timestamped directory.
+The first Numba call compiles or loads its cached `float64` specialization;
+later calls reuse that compiled code for every accepted input dtype. `mdapy`
+also leaves the thread count to Numba instead of changing an application's
+thread configuration.
+
+<p align="center">
+  <a href="benchmarks/RESULTS.md">
+    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg" alt="NumPy completes the large selection in 7.66 seconds, compared with 1.43 seconds for the first Numba call with its cache available and 0.94 seconds for a repeated Numba call" width="760">
+  </a>
+</p>
+
+The reference campaign used `float64` inputs, and the first Numba call had its
+disk cache available. Both references and public engines selected exactly the
+same indices. The campaign did not show a meaningful reduction in process
+memory, so this is a speed optimization rather than a memory optimization.
+Timings are machine-specific; the
+[benchmark results](benchmarks/RESULTS.md) contain the complete protocol and
+raw measurements.
+
+The [Numba example](examples/5_mda_numba.py) recreates this deterministic
+workload, times both engines and checks their results:
 
 ```bash
-uv run benchmarks/run.py
-uv run benchmarks/scale.py
+uv run --extra numba python examples/5_mda_numba.py
 ```
 
 ## Examples
+
+Clone the repository and run any example in the project environment:
+
+```bash
+uv run python examples/1_mda_minimal.py
+```
 
 Start with the [minimal selection](examples/1_mda_minimal.py), a one-dimensional
 case small enough to follow in a debugger. The next example animates how the
@@ -142,7 +197,7 @@ algorithm expands a diverse subset through a two-dimensional sample.
 </p>
 
 For a focused explanation of circular distances, see the
-[directional variables example](examples/3_mda_directional.py). The final
+[directional variables example](examples/3_mda_directional.py). The fourth
 example applies the algorithm to select representative sea states from 10,000
 directional observations.
 
@@ -151,12 +206,6 @@ directional observations.
     <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/examples/datawave.png" alt="Representative sea states selected from directional wave data" width="750">
   </a>
 </p>
-
-Clone the repository and run any example in the project environment:
-
-```bash
-uv run python examples/1_mda_minimal.py
-```
 
 ## Legacy tuple API
 
@@ -177,7 +226,8 @@ points, indices = max_diss_alg(
 Passing a tuple to `mdapy.max_diss_alg` raises an error that points to this
 compatibility module. The published `ihc-mdapy==0.1.0` package uses the legacy
 API; its unpublished `v0.1.1` fix remains available in this repository's Git
-history.
+history. Both APIs continue to accept the historical `show_progress` boolean,
+but ignore it because selection engines no longer report progress.
 
 ## Development
 

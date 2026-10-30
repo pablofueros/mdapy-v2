@@ -1,0 +1,345 @@
+{
+  "artifacts": {
+    "compilation.json": {
+      "cached_process_s": 0.005124301002069842,
+      "cached_selection_s": 0.0001985,
+      "cold_process_s": 1.075988345000951,
+      "cold_selection_s": 0.0001023,
+      "workload": "reference-scalar-float64"
+    },
+    "metadata.json": {
+      "algorithms": {
+        "rust_candidate": {
+          "file": "benchmarks/experiments/rust/rust_candidate.rs",
+          "sha256": "d5647a89b67c3bcf2c3ea7bc89695d164e1671e4232065d5c664ebeab89a36c8"
+        },
+        "rust_parallel_candidate": {
+          "file": "benchmarks/experiments/rust/rust_parallel_candidate.rs",
+          "sha256": "96ce622d65e5b53da4fdf0bc93dc74ea49714d3846fb8ca8682dbc02390dd51e"
+        }
+      },
+      "cargo": "cargo 1.90.0 (840b83a10 2025-07-30)",
+      "comparison_threads": null,
+      "cpu_count": 12,
+      "created_at": "2026-10-29T08:44:21.284600+00:00",
+      "machine": "aarch64",
+      "mode": "tuning",
+      "numba_cpu_name": "generic",
+      "numba_parallel_threads": 4,
+      "numpy": "1.26.0",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+      "python": "3.12.3",
+      "random_seed": 20261020,
+      "rayon": "1.12.0",
+      "rayon_core": "1.13.0",
+      "rayon_requirement": ">=1.10, <2",
+      "runs": 7,
+      "rust_script": "rust-script 0.36.0",
+      "rustc": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+      "suite": null,
+      "thread_counts": [
+        1,
+        2,
+        4,
+        8,
+        12
+      ],
+      "timeout_s": 900.0,
+      "workloads": {
+        "columns-d30": {
+          "columns": 30,
+          "rows": 100000,
+          "selections": 20
+        },
+        "grounded-castro-k5000": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 5000
+        },
+        "grounded-datawave-k20": {
+          "dataset": "datawave",
+          "selections": 20
+        },
+        "grounded-directional-k600": {
+          "columns": 3,
+          "directional": 1,
+          "rows": 87664,
+          "selections": 600
+        },
+        "grounded-ncsu-k1250": {
+          "columns": 3,
+          "rows": 1000000,
+          "selections": 1250
+        }
+      }
+    },
+    "summary.json": {
+      "recommended_threads_for_this_environment": 4,
+      "threads": {
+        "1": {
+          "faster_workload_count": 0,
+          "maximum_speedup_vs_sequential": 0.8777590806304556,
+          "median_speedup_vs_sequential": 0.6195513332177746,
+          "minimum_speedup_vs_sequential": 0.6103362794963769,
+          "workload_count": 5
+        },
+        "12": {
+          "faster_workload_count": 0,
+          "maximum_speedup_vs_sequential": 0.8079431000741577,
+          "median_speedup_vs_sequential": 0.3098046712010927,
+          "minimum_speedup_vs_sequential": 0.14026865571292815,
+          "workload_count": 5
+        },
+        "2": {
+          "faster_workload_count": 3,
+          "maximum_speedup_vs_sequential": 1.4929618530881414,
+          "median_speedup_vs_sequential": 1.070502270511335,
+          "minimum_speedup_vs_sequential": 0.8450022110914422,
+          "workload_count": 5
+        },
+        "4": {
+          "faster_workload_count": 5,
+          "maximum_speedup_vs_sequential": 2.486964901597177,
+          "median_speedup_vs_sequential": 1.6927579522697942,
+          "minimum_speedup_vs_sequential": 1.2459650400965494,
+          "workload_count": 5
+        },
+        "8": {
+          "faster_workload_count": 3,
+          "maximum_speedup_vs_sequential": 1.7019101074723777,
+          "median_speedup_vs_sequential": 1.3723988524643131,
+          "minimum_speedup_vs_sequential": 0.47155594712180465,
+          "workload_count": 5
+        }
+      },
+      "workloads": {
+        "columns-d30": {
+          "rust_parallel": {
+            "1": {
+              "first_selection_median_s": 0.051025888,
+              "hot_selection_median_s": 0.051486761,
+              "preparation_median_s": 0.029249895000248216,
+              "process_median_s": 0.5510431799993967,
+              "speedup_vs_sequential": 0.8777590806304556
+            },
+            "12": {
+              "first_selection_median_s": 0.066189459,
+              "hot_selection_median_s": 0.056115059,
+              "preparation_median_s": 0.028391940002620686,
+              "process_median_s": 0.5794696619996103,
+              "speedup_vs_sequential": 0.8053626389308438
+            },
+            "2": {
+              "first_selection_median_s": 0.030497639,
+              "hot_selection_median_s": 0.030270681,
+              "preparation_median_s": 0.03068444899690803,
+              "process_median_s": 0.5308511629991699,
+              "speedup_vs_sequential": 1.4929618530881414
+            },
+            "4": {
+              "first_selection_median_s": 0.026041914,
+              "hot_selection_median_s": 0.018171938,
+              "preparation_median_s": 0.027906782997888513,
+              "process_median_s": 0.4790111789989169,
+              "speedup_vs_sequential": 2.486964901597177
+            },
+            "8": {
+              "first_selection_median_s": 0.048009983,
+              "hot_selection_median_s": 0.026554265,
+              "preparation_median_s": 0.029377450002357364,
+              "process_median_s": 0.5464422540026135,
+              "speedup_vs_sequential": 1.7019101074723777
+            }
+          },
+          "rust_sequential": {
+            "first_selection_median_s": 0.049296035,
+            "hot_selection_median_s": 0.045192972,
+            "preparation_median_s": 0.028672749998804647,
+            "process_median_s": 0.5763833489982062
+          }
+        },
+        "grounded-castro-k5000": {
+          "rust_parallel": {
+            "1": {
+              "first_selection_median_s": 3.708749508,
+              "hot_selection_median_s": 3.766788064,
+              "preparation_median_s": 0.0027907820040127262,
+              "process_median_s": 7.869999048998579,
+              "speedup_vs_sequential": 0.6195513332177746
+            },
+            "12": {
+              "first_selection_median_s": 16.62803269,
+              "hot_selection_median_s": 16.637491499,
+              "preparation_median_s": 0.0024730219956836663,
+              "process_median_s": 33.505999134002195,
+              "speedup_vs_sequential": 0.14026865571292815
+            },
+            "2": {
+              "first_selection_median_s": 2.68533897,
+              "hot_selection_median_s": 2.761789894,
+              "preparation_median_s": 0.002273332000186201,
+              "process_median_s": 5.827894008005387,
+              "speedup_vs_sequential": 0.8450022110914422
+            },
+            "4": {
+              "first_selection_median_s": 1.990039001,
+              "hot_selection_median_s": 1.873020905,
+              "preparation_median_s": 0.002779668000584934,
+              "process_median_s": 4.229422587995941,
+              "speedup_vs_sequential": 1.2459650400965494
+            },
+            "8": {
+              "first_selection_median_s": 4.887788641,
+              "hot_selection_median_s": 4.948974944,
+              "preparation_median_s": 0.0024916340044001117,
+              "process_median_s": 10.221702542003186,
+              "speedup_vs_sequential": 0.47155594712180465
+            }
+          },
+          "rust_sequential": {
+            "first_selection_median_s": 2.336166483,
+            "hot_selection_median_s": 2.333718567,
+            "preparation_median_s": 0.0023051120006130077,
+            "process_median_s": 5.051808602001984
+          }
+        },
+        "grounded-datawave-k20": {
+          "rust_parallel": {
+            "1": {
+              "first_selection_median_s": 0.022963833,
+              "hot_selection_median_s": 0.026287979,
+              "preparation_median_s": 0.0060206499983905815,
+              "process_median_s": 0.44130569400294917,
+              "speedup_vs_sequential": 0.617930918158448
+            },
+            "12": {
+              "first_selection_median_s": 0.069468866,
+              "hot_selection_median_s": 0.052433538,
+              "preparation_median_s": 0.006432130001485348,
+              "process_median_s": 0.5127557989981142,
+              "speedup_vs_sequential": 0.3098046712010927
+            },
+            "2": {
+              "first_selection_median_s": 0.018207521,
+              "hot_selection_median_s": 0.017643062,
+              "preparation_median_s": 0.009830474999034777,
+              "process_median_s": 0.4425022009963868,
+              "speedup_vs_sequential": 0.9207106453516968
+            },
+            "4": {
+              "first_selection_median_s": 0.01826876,
+              "hot_selection_median_s": 0.011459523,
+              "preparation_median_s": 0.005808247005916201,
+              "process_median_s": 0.4224288410041481,
+              "speedup_vs_sequential": 1.4175245339618412
+            },
+            "8": {
+              "first_selection_median_s": 0.048381733,
+              "hot_selection_median_s": 0.024843927,
+              "preparation_median_s": 0.007086698002240155,
+              "process_median_s": 0.4608090990004712,
+              "speedup_vs_sequential": 0.653848121514767
+            }
+          },
+          "rust_sequential": {
+            "first_selection_median_s": 0.017057183,
+            "hot_selection_median_s": 0.016244155,
+            "preparation_median_s": 0.005804961998364888,
+            "process_median_s": 0.4262661810062127
+          }
+        },
+        "grounded-directional-k600": {
+          "rust_parallel": {
+            "1": {
+              "first_selection_median_s": 0.529467529,
+              "hot_selection_median_s": 0.524829917,
+              "preparation_median_s": 0.00514520300203003,
+              "process_median_s": 1.4344476539990865,
+              "speedup_vs_sequential": 0.7384334151820083
+            },
+            "12": {
+              "first_selection_median_s": 1.801770133,
+              "hot_selection_median_s": 1.891605712,
+              "preparation_median_s": 0.004746800994325895,
+              "process_median_s": 4.022696710999298,
+              "speedup_vs_sequential": 0.20487987826503243
+            },
+            "2": {
+              "first_selection_median_s": 0.369002244,
+              "hot_selection_median_s": 0.362028142,
+              "preparation_median_s": 0.005086301003757399,
+              "process_median_s": 1.1218922659973032,
+              "speedup_vs_sequential": 1.070502270511335
+            },
+            "4": {
+              "first_selection_median_s": 0.247539473,
+              "hot_selection_median_s": 0.228947055,
+              "preparation_median_s": 0.004502701995079406,
+              "process_median_s": 0.8709181529993657,
+              "speedup_vs_sequential": 1.6927579522697942
+            },
+            "8": {
+              "first_selection_median_s": 0.466080615,
+              "hot_selection_median_s": 0.282390172,
+              "preparation_median_s": 0.005153804006113205,
+              "process_median_s": 1.1538273590049357,
+              "speedup_vs_sequential": 1.3723988524643131
+            }
+          },
+          "rust_sequential": {
+            "first_selection_median_s": 0.386794111,
+            "hot_selection_median_s": 0.387551948,
+            "preparation_median_s": 0.006100485996284988,
+            "process_median_s": 1.1357821889978368
+          }
+        },
+        "grounded-ncsu-k1250": {
+          "rust_parallel": {
+            "1": {
+              "first_selection_median_s": 7.558036487,
+              "hot_selection_median_s": 7.560145972,
+              "preparation_median_s": 0.01656063800328411,
+              "process_median_s": 15.562576664000517,
+              "speedup_vs_sequential": 0.6103362794963769
+            },
+            "12": {
+              "first_selection_median_s": 5.703248558,
+              "hot_selection_median_s": 5.711084561,
+              "preparation_median_s": 0.013862510000762995,
+              "process_median_s": 11.854834632002166,
+              "speedup_vs_sequential": 0.8079431000741577
+            },
+            "2": {
+              "first_selection_median_s": 4.243636889,
+              "hot_selection_median_s": 4.23335237,
+              "preparation_median_s": 0.014719614999194164,
+              "process_median_s": 8.932165475998772,
+              "speedup_vs_sequential": 1.0899710115555534
+            },
+            "4": {
+              "first_selection_median_s": 2.397810854,
+              "hot_selection_median_s": 2.389011322,
+              "preparation_median_s": 0.015026164001028519,
+              "process_median_s": 5.224576156004332,
+              "speedup_vs_sequential": 1.9314397225782591
+            },
+            "8": {
+              "first_selection_median_s": 3.168468293,
+              "hot_selection_median_s": 3.281876874,
+              "preparation_median_s": 0.018138141997042112,
+              "process_median_s": 6.864719967998099,
+              "speedup_vs_sequential": 1.4059733323804153
+            }
+          },
+          "rust_sequential": {
+            "first_selection_median_s": 4.683954286,
+            "hot_selection_median_s": 4.614231365,
+            "preparation_median_s": 0.015278785998816602,
+            "process_median_s": 9.753231623995816
+          }
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="255" viewBox="0 0 760 255" role="img" aria-labelledby="title description">
+  <title id="title">NumPy and Numba call times for a large maximum-dissimilarity selection</title>
+  <desc id="description">For 5,000 selections over 121,968 observations and three variables, the median call time was 7.66 seconds with NumPy, 1.43 seconds for the first Numba call with its disk cache available, and 0.94 seconds for a repeated Numba call.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .heading { fill: #24292f; font-size: 18px; font-weight: 600; }
+    .label { fill: #57606a; font-size: 15px; }
+    .value { fill: #24292f; font-size: 15px; font-weight: 600; }
+    .note { fill: #57606a; font-size: 13px; }
+    .grid { stroke: #d0d7de; }
+    .numpy { fill: #8c959f; }
+    .numba-first { fill: #57ab5a; }
+    .numba-hot { fill: #2da44e; }
+    @media (prefers-color-scheme: dark) {
+      .heading, .value { fill: #f0f6fc; }
+      .label, .note { fill: #8c959f; }
+      .grid { stroke: #30363d; }
+      .numpy { fill: #6e7681; }
+      .numba-first { fill: #56d364; }
+      .numba-hot { fill: #3fb950; }
+    }
+  </style>
+
+  <text class="heading" x="30" y="36">Seconds saved on a large selection</text>
+
+  <text class="label" x="190" y="91" text-anchor="end">NumPy</text>
+  <rect class="numpy" x="210" y="73" width="430" height="24" rx="2"/>
+  <text class="value" x="650" y="91">7.66 s</text>
+
+  <text class="label" x="190" y="139" text-anchor="end">Numba · first (cached)</text>
+  <rect class="numba-first" x="210" y="121" width="80" height="24" rx="2"/>
+  <text class="value" x="300" y="139">1.43 s</text>
+
+  <text class="label" x="190" y="187" text-anchor="end">Numba · repeated</text>
+  <rect class="numba-hot" x="210" y="169" width="53" height="24" rx="2"/>
+  <text class="value" x="273" y="187">0.94 s</text>
+
+  <line class="grid" x1="210" y1="211" x2="640" y2="211"/>
+  <text class="note" x="210" y="237">121,968 observations · 3 variables · 5,000 selections · median of 5 runs</text>
+</svg>

@@ -123,3 +123,34 @@ def test_float64_keeps_distinct_values_beyond_float32_precision():
 
     assert indices == [0, 2, 1]
     np.testing.assert_array_equal(selected[:, 0], values[indices])
+
+
+@pytest.mark.parametrize(
+    ("values", "seed_index", "expected_indices"),
+    [
+        (np.array([-128, 0, 127], dtype=np.int8), 0, [0, 2, 1]),
+        (np.array([0, 1, 255], dtype=np.uint8), 2, [2, 0, 1]),
+    ],
+    ids=["signed-overflow", "unsigned-wraparound"],
+)
+def test_integer_subtraction_does_not_overflow(values, seed_index, expected_indices):
+    selected, indices = max_diss_alg(
+        DataColumn(values),
+        n_clusters=3,
+        seed_index=seed_index,
+    )
+
+    assert indices == expected_indices
+    assert selected.dtype == values.dtype
+    np.testing.assert_array_equal(selected[:, 0], values[indices])
+
+
+@pytest.mark.parametrize("scale", [1e-30, 1e20])
+def test_float32_deviation_is_computed_in_float64(scale):
+    values = np.array([0, scale, 2 * scale], dtype=np.float32)
+
+    selected, indices = max_diss_alg(DataColumn(values), n_clusters=3)
+
+    assert indices == [0, 2, 1]
+    assert selected.dtype == np.float32
+    np.testing.assert_array_equal(selected[:, 0], values[indices])

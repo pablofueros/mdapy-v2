@@ -21,6 +21,18 @@ def test_legacy_api_adapts_tuple_seed_and_directional_indices(capsys):
     assert capsys.readouterr().out == ""
 
 
+def test_legacy_api_accepts_and_ignores_progress_option(capsys):
+    selected, indices = max_diss_alg(
+        ([0, 1, 2],),
+        n_clusters=2,
+        show_progress=True,
+    )
+
+    assert indices == [0, 2]
+    np.testing.assert_array_equal(selected[:, 0], [0, 2])
+    assert capsys.readouterr().out == ""
+
+
 @pytest.mark.parametrize("dir_indices", [[True], [1.0]])
 def test_legacy_rejects_non_integer_directional_indices(dir_indices):
     with pytest.raises(TypeError, match="dir_indices must contain only integers"):

@@ -58,6 +58,8 @@ La evolución del algoritmo debe poder explicarse y medirse con ejemplos.
 ## Comprobaciones
 
 - Usa `uv run` para ejecutar Python en el entorno del proyecto.
+- En Linux ARM64 bajo WSL2, ejecuta las comprobaciones que compilen Numba con
+  `NUMBA_CPU_NAME=generic`; no configures este objetivo desde la biblioteca.
 - Tras cambios, ejecuta `make format`, `make lint` y `make test`.
 - Al hacer commit, confía en los hooks instalados para comprobar el lock, el
   formato y el lint; no ejecutes antes `make format` y `make lint` salvo que
