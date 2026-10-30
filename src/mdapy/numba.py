@@ -1,14 +1,7 @@
 """Optional Numba core for selecting maximally dissimilar observations."""
 
-from numbers import Integral
-
 import numpy as np
-from numba import (
-    get_num_threads,
-    njit,
-    prange,
-    set_num_threads,
-)
+from numba import njit, prange
 from numpy.typing import NDArray
 
 
@@ -66,34 +59,15 @@ def _select_indices(
     dir_indices: list[int] | None,
     n_clusters: int,
     seed_index: int,
-    *,
-    workers: int | None = None,
 ) -> list[int]:
     """Adapt the compiled kernel to the internal NumPy core interface."""
-    if workers is not None:
-        if isinstance(workers, bool) or not isinstance(workers, Integral):
-            raise TypeError("workers must be an integer or None")
-        if workers < 1:
-            raise ValueError("workers must be a positive integer")
-
     directional = np.zeros(data.shape[1], dtype=np.bool_)
     directional[dir_indices or []] = True
 
-    previous_workers = None
-    if workers is not None:
-        previous_workers = get_num_threads()
-        set_num_threads(int(workers))
-
-    try:
-        indices = _select_indices_kernel(
-            data,
-            deviations,
-            directional,
-            n_clusters,
-            seed_index,
-        )
-    finally:
-        if previous_workers is not None:
-            set_num_threads(previous_workers)
-
-    return indices.tolist()
+    return _select_indices_kernel(
+        data,
+        deviations,
+        directional,
+        n_clusters,
+        seed_index,
+    ).tolist()
