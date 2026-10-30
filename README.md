@@ -119,42 +119,23 @@ circular standard deviation. Exact ties preserve input order.
 
 ## Performance
 
-The benchmark suite preserves one numerical reference for each significant
-algorithm evolution, using its latest available patch. Reference cases verify
-the exact selected indices before any timing is recorded.
+Benchmarks require exact selected indices before recording timings. The chart
+at the top labels the preserved 2.0 reference as `ihc-mdapy` because it uses
+the same selection algorithm as the latest published release, adapted to the
+current API. It compares that reference with the default NumPy engine introduced
+in version 2.2 on the same `datawave` workload and environment.
 
-For readability, the chart labels the preserved 2.0 reference as `ihc-mdapy`:
-it uses the same selection algorithm as the latest published `ihc-mdapy`
-release, adapted to the current API. The `mdapy-v2` bar shows the optimized
-NumPy engine introduced in version 2.2, which remains the default. Both measured
-the same `datawave` workload in the same software and hardware environment.
+Most of the improvement came from maintaining incremental minimum distances
+instead of repeatedly scanning the selected subset and growing a pair cache.
+Version 2.2 then reduced the cost of each selection by reusing buffers and
+comparing squared distances. With 140,256 observations and 20 selections, the
+median complete call decreased from 32.63 seconds to 0.067 seconds.
 
-Version 2.1 replaced repeated subset scans and a growing pair cache with
-incremental minimum distances. In the documented `datawave` experiment with
-20 selections, the complete call decreased from 32.63 seconds to 0.086 seconds
-and peak RSS from 507 MiB to 118 MiB. These figures describe one environment
-and workload, not a universal speedup.
-
-Version 2.2 keeps the same algorithmic complexity and public API, but reduces
-the cost of each selection by reusing NumPy buffers and comparing squared
-distances. Across the documented workloads, complete calls improved by 1.10×
-to 1.56× while preserving the exact selected indices. The largest measured
-workload saved 7.64 seconds and reduced peak RSS by 12.7%.
-
-Version 2.3 adds the optional Numba engine without changing the NumPy default.
-
-See the complete protocol, limitations, and raw measurements in the
-[benchmark results](benchmarks/RESULTS.md).
-
-`run.py` runs the compact `datawave` benchmark, `scale.py` compares versions 2.1
-and 2.2 across broader scaling workloads, and `numba.py` confirms the current
-public NumPy and Numba engines. They validate the preserved references before
-recording timings and write their results to a new output directory.
-
-```bash
-uv run benchmarks/run.py
-uv run benchmarks/scale.py
-```
+Version 2.3 keeps this NumPy engine as the default and adds Numba as an explicit
+option for workloads where saving seconds justifies its compilation cost. These
+measurements describe one workload and environment, not a universal speedup.
+See the [benchmark results](benchmarks/RESULTS.md) for the complete protocol,
+reproduction commands, and raw data.
 
 ## Numba acceleration
 
@@ -169,7 +150,7 @@ Numba instead of changing an application's thread configuration.
 
 <p align="center">
   <a href="benchmarks/RESULTS.md">
-    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_3-numpy-numba.svg" alt="NumPy completes the large selection in 6.45 seconds, compared with 1.72 seconds for the first Numba call with its cache available and 0.85 seconds for a repeated Numba call" width="760">
+    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg" alt="NumPy completes the large selection in 6.45 seconds, compared with 1.72 seconds for the first Numba call with its cache available and 0.85 seconds for a repeated Numba call" width="760">
   </a>
 </p>
 
