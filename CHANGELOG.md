@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.3.0](https://github.com/pablofueros/mdapy-v2/compare/v2.2.1...v2.3.0) (2026-10-30)
+
+
+### Features
+
+* add optional Numba engine ([74d616f](https://github.com/pablofueros/mdapy-v2/commit/74d616ff7955286d62212932d4ae5d35c8f4ea2e))
+
+
+### Bug Fixes
+
+* preserve progress API compatibility ([bff1e89](https://github.com/pablofueros/mdapy-v2/commit/bff1e89a3e43e25f7813b75fe6f83a16b1e6093d))
+* standardize dtype calculations ([99f0d6a](https://github.com/pablofueros/mdapy-v2/commit/99f0d6aaccbfa5c456bc361f11021b01a075e300))
+
+
+### Performance Improvements
+
+* confirm public Numba engine ([142a837](https://github.com/pablofueros/mdapy-v2/commit/142a8377de1e8953afaad91d85393264faabd326))
+
+
+### Code Refactoring
+
+* remove obsolete progress output ([82f0f25](https://github.com/pablofueros/mdapy-v2/commit/82f0f250cd5d46e19b089e719bfdf4a485a119c4))
+* simplify numba adapter ([202ff30](https://github.com/pablofueros/mdapy-v2/commit/202ff30ad5695ad21a9844c186e9248948132cf6))
+
 ## [2.2.1](https://github.com/pablofueros/mdapy-v2/compare/v2.2.0...v2.2.1) (2026-10-27)
 
 
