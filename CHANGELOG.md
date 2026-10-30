@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/pablofueros/mdapy-v2/compare/v2.3.0...v2.3.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* remove downloads badge from README ([e19f4eb](https://github.com/pablofueros/mdapy-v2/commit/e19f4eb978bb860257756240931abdccbb6b33b7))
+
 ## [2.3.0](https://github.com/pablofueros/mdapy-v2/compare/v2.2.1...v2.3.0) (2026-10-30)
 
 
