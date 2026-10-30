@@ -17,9 +17,12 @@ from types import ModuleType
 import numpy as np
 import scipy
 
+from benchmarks.experiments.compact_results import compact_campaign
+
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT.parent / "examples/data/datawave.npz"
-ALGORITHMS = tuple(sorted((ROOT / "algorithms").glob("v*.py")))
+ALGORITHM_NAMES = ("v2_0", "v2_1", "v2_2")
+ALGORITHMS = tuple(ROOT / "algorithms" / f"{name}.py" for name in ALGORITHM_NAMES)
 
 
 def load(path: Path) -> ModuleType:
@@ -128,14 +131,14 @@ def benchmark(args: argparse.Namespace) -> Path:
     }
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
 
-    script = Path(__file__).resolve()
     for selections in args.counts:
         for run_number in range(1, args.runs + 1):
             paths = ALGORITHMS if run_number % 2 else tuple(reversed(ALGORITHMS))
             for path in paths:
                 command = [
                     sys.executable,
-                    str(script),
+                    "-m",
+                    "benchmarks.run",
                     "--worker",
                     path.stem,
                     "--selections",
@@ -148,6 +151,7 @@ def benchmark(args: argparse.Namespace) -> Path:
                     capture_output=True,
                     text=True,
                     timeout=args.timeout,
+                    cwd=ROOT.parent,
                 )
                 process_s = perf_counter() - started
                 record = json.loads(completed.stdout)
@@ -157,6 +161,7 @@ def benchmark(args: argparse.Namespace) -> Path:
                 with result.open("a") as stream:
                     stream.write(json.dumps(record) + "\n")
 
+    compact_campaign(output)
     return output
 
 
@@ -195,7 +200,7 @@ def main() -> None:
         print("All reference cases passed.")
     else:
         output = benchmark(args)
-        print(f"Raw results written to {output}")
+        print(f"Compact results written to {output}")
 
 
 if __name__ == "__main__":

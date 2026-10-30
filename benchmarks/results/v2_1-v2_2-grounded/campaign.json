@@ -1,0 +1,299 @@
+{
+  "artifacts": {
+    "metadata.json": {
+      "algorithms": {
+        "v2_1": {
+          "file": "v2_1.py",
+          "sha256": "e04933bda8b41f31b07261791287bef9ffc1cd0534793c035e689a5b1ae2f813"
+        },
+        "v2_2": {
+          "file": "v2_2.py",
+          "sha256": "b4c7c18c6fa92d5f70743fd974b0b4892dcdae5cdbe1f237c7c64b7a5b298619"
+        }
+      },
+      "cpu_count": 12,
+      "created_at": "2026-10-27T21:29:45.126277+00:00",
+      "machine": "aarch64",
+      "numpy": "1.26.0",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+      "python": "3.12.3",
+      "random_seed": 20261020,
+      "runs": 5,
+      "scipy": "1.15.1",
+      "suite": "grounded",
+      "timeout_s": 900.0,
+      "workloads": {
+        "grounded-castro-k100": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 100
+        },
+        "grounded-castro-k1000": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 1000
+        },
+        "grounded-castro-k5000": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 5000
+        },
+        "grounded-datawave-k100": {
+          "dataset": "datawave",
+          "selections": 100
+        },
+        "grounded-datawave-k20": {
+          "dataset": "datawave",
+          "selections": 20
+        },
+        "grounded-directional-k600": {
+          "columns": 3,
+          "directional": 1,
+          "rows": 87664,
+          "selections": 600
+        },
+        "grounded-franklin-k600": {
+          "columns": 3,
+          "rows": 87664,
+          "selections": 600
+        },
+        "grounded-ncsu-k1250": {
+          "columns": 3,
+          "rows": 1000000,
+          "selections": 1250
+        },
+        "grounded-tudelft-k1000": {
+          "columns": 3,
+          "rows": 10000,
+          "selections": 1000
+        }
+      }
+    },
+    "summary.json": {
+      "grounded-castro-k100": {
+        "call_speedup": 1.560331855903534,
+        "peak_change_percent": -1.5263120617607484,
+        "selection_saved_s": 0.07853145900116942,
+        "selection_speedup": 1.5634225473789587,
+        "v2_1": {
+          "call_median_s": 0.2206174650018511,
+          "peak_median_mib": 110.3046875,
+          "preparation_median_s": 0.002703123000173946,
+          "selection_max_s": 0.23721371499959787,
+          "selection_median_s": 0.21791434200167714,
+          "selection_min_s": 0.20662260900098772
+        },
+        "v2_2": {
+          "call_median_s": 0.14139137399979518,
+          "peak_median_mib": 108.62109375,
+          "preparation_median_s": 0.0020357339999463875,
+          "selection_max_s": 0.14255361699906643,
+          "selection_median_s": 0.13938288300050772,
+          "selection_min_s": 0.13299193199964066
+        }
+      },
+      "grounded-castro-k1000": {
+        "call_speedup": 1.4436170634113723,
+        "peak_change_percent": -6.6635445239847435,
+        "selection_saved_s": 0.6610802010000043,
+        "selection_speedup": 1.4478449609881803,
+        "v2_1": {
+          "call_median_s": 2.1391857040016475,
+          "peak_median_mib": 116.7734375,
+          "preparation_median_s": 0.002764426999419811,
+          "selection_max_s": 2.228879708000022,
+          "selection_median_s": 2.1372164950007573,
+          "selection_min_s": 2.095431216999714
+        },
+        "v2_2": {
+          "call_median_s": 1.4818235100010497,
+          "peak_median_mib": 108.9921875,
+          "preparation_median_s": 0.0036898700000165263,
+          "selection_max_s": 1.5727045750008983,
+          "selection_median_s": 1.476136294000753,
+          "selection_min_s": 1.4046980389994133
+        }
+      },
+      "grounded-castro-k5000": {
+        "call_speedup": 1.5124987039336528,
+        "peak_change_percent": -1.3099074747894845,
+        "selection_saved_s": 3.80226073599988,
+        "selection_speedup": 1.5125569627370918,
+        "v2_1": {
+          "call_median_s": 11.223555923999811,
+          "peak_median_mib": 112.72265625,
+          "preparation_median_s": 0.0030743610004719812,
+          "selection_max_s": 11.630470494999827,
+          "selection_median_s": 11.220481562999339,
+          "selection_min_s": 11.046551076000469
+        },
+        "v2_2": {
+          "call_median_s": 7.420539200998974,
+          "peak_median_mib": 111.24609375,
+          "preparation_median_s": 0.0023170299991761567,
+          "selection_max_s": 7.455055419999553,
+          "selection_median_s": 7.418220826999459,
+          "selection_min_s": 7.368707202000223
+        }
+      },
+      "grounded-datawave-k100": {
+        "call_speedup": 1.209437681503517,
+        "peak_change_percent": -2.7933906683822007,
+        "selection_saved_s": 0.06356916499862564,
+        "selection_speedup": 1.2147455936259162,
+        "v2_1": {
+          "call_median_s": 0.3669513929999084,
+          "peak_median_mib": 115.3671875,
+          "preparation_median_s": 0.00723699099944497,
+          "selection_max_s": 0.36512168000081147,
+          "selection_median_s": 0.3595899769989046,
+          "selection_min_s": 0.35037265199935064
+        },
+        "v2_2": {
+          "call_median_s": 0.30340661500122224,
+          "peak_median_mib": 112.14453125,
+          "preparation_median_s": 0.005339483001080225,
+          "selection_max_s": 0.30867158900036884,
+          "selection_median_s": 0.29602081200027897,
+          "selection_min_s": 0.28951014900121663
+        }
+      },
+      "grounded-datawave-k20": {
+        "call_speedup": 1.3645831305693683,
+        "peak_change_percent": -4.433202422951476,
+        "selection_saved_s": 0.017071950001991354,
+        "selection_speedup": 1.2781093196383289,
+        "v2_1": {
+          "call_median_s": 0.09154064399990602,
+          "peak_median_mib": 117.3671875,
+          "preparation_median_s": 0.010917243000221788,
+          "selection_max_s": 0.08107655399908253,
+          "selection_median_s": 0.07845770300082222,
+          "selection_min_s": 0.07647929900122108
+        },
+        "v2_2": {
+          "call_median_s": 0.06708322999838856,
+          "peak_median_mib": 112.1640625,
+          "preparation_median_s": 0.005873051999515155,
+          "selection_max_s": 0.07835559799968905,
+          "selection_median_s": 0.06138575299883087,
+          "selection_min_s": 0.05963723800050502
+        }
+      },
+      "grounded-directional-k600": {
+        "call_speedup": 1.0960192831652857,
+        "peak_change_percent": -4.935119443181424,
+        "selection_saved_s": 0.1146274259990605,
+        "selection_speedup": 1.094376392602964,
+        "v2_1": {
+          "call_median_s": 1.3359368170004018,
+          "peak_median_mib": 111.68359375,
+          "preparation_median_s": 0.0050958840001840144,
+          "selection_max_s": 1.413120961999084,
+          "selection_median_s": 1.3292047459999594,
+          "selection_min_s": 1.316395742000168
+        },
+        "v2_2": {
+          "call_median_s": 1.2188990080012445,
+          "peak_median_mib": 106.171875,
+          "preparation_median_s": 0.005487035999976797,
+          "selection_max_s": 1.2928852569984883,
+          "selection_median_s": 1.214577320000899,
+          "selection_min_s": 1.1458790990000125
+        }
+      },
+      "grounded-franklin-k600": {
+        "call_speedup": 1.4622357618004285,
+        "peak_change_percent": -3.9450624128187672,
+        "selection_saved_s": 0.2906878939975286,
+        "selection_speedup": 1.4649563124193845,
+        "v2_1": {
+          "call_median_s": 0.9178278159979527,
+          "peak_median_mib": 109.21484375,
+          "preparation_median_s": 0.0019459279992588563,
+          "selection_max_s": 0.9375705080001353,
+          "selection_median_s": 0.9158818879986939,
+          "selection_min_s": 0.8798655929986126
+        },
+        "v2_2": {
+          "call_median_s": 0.6276879830020334,
+          "peak_median_mib": 104.90625,
+          "preparation_median_s": 0.00222602400026517,
+          "selection_max_s": 0.6306497040004615,
+          "selection_median_s": 0.6251939940011653,
+          "selection_min_s": 0.6103058089993283
+        }
+      },
+      "grounded-ncsu-k1250": {
+        "call_speedup": 1.5037915950844896,
+        "peak_change_percent": -12.728209773391008,
+        "selection_saved_s": 7.6449854579987,
+        "selection_speedup": 1.5040687922166318,
+        "v2_1": {
+          "call_median_s": 22.83484261600097,
+          "peak_median_mib": 250.12109375,
+          "preparation_median_s": 0.01484543199876498,
+          "selection_max_s": 23.26393728900075,
+          "selection_median_s": 22.811537277999378,
+          "selection_min_s": 22.134477245999733
+        },
+        "v2_2": {
+          "call_median_s": 15.184845221001524,
+          "peak_median_mib": 218.28515625,
+          "preparation_median_s": 0.017435189000025275,
+          "selection_max_s": 15.475066573000731,
+          "selection_median_s": 15.166551820000677,
+          "selection_min_s": 15.021816018999743
+        }
+      },
+      "grounded-tudelft-k1000": {
+        "call_speedup": 1.4686435743367976,
+        "peak_change_percent": 1.6305959086866384,
+        "selection_saved_s": 0.04959310199956235,
+        "selection_speedup": 1.4670576602267942,
+        "v2_1": {
+          "call_median_s": 0.15631500099880213,
+          "peak_median_mib": 105.40625,
+          "preparation_median_s": 0.00031294700056605507,
+          "selection_max_s": 0.18833220599844935,
+          "selection_median_s": 0.15577507099987997,
+          "selection_min_s": 0.15496548100054497
+        },
+        "v2_2": {
+          "call_median_s": 0.10643494700161682,
+          "peak_median_mib": 107.125,
+          "preparation_median_s": 0.0002529780012991978,
+          "selection_max_s": 0.13202977800028748,
+          "selection_median_s": 0.10618196900031762,
+          "selection_min_s": 0.10508450599991193
+        }
+      }
+    }
+  },
+  "migration": {
+    "source_files": [
+      "grounded-castro-k100-v2_1.jsonl",
+      "grounded-castro-k100-v2_2.jsonl",
+      "grounded-castro-k1000-v2_1.jsonl",
+      "grounded-castro-k1000-v2_2.jsonl",
+      "grounded-castro-k5000-v2_1.jsonl",
+      "grounded-castro-k5000-v2_2.jsonl",
+      "grounded-datawave-k100-v2_1.jsonl",
+      "grounded-datawave-k100-v2_2.jsonl",
+      "grounded-datawave-k20-v2_1.jsonl",
+      "grounded-datawave-k20-v2_2.jsonl",
+      "grounded-directional-k600-v2_1.jsonl",
+      "grounded-directional-k600-v2_2.jsonl",
+      "grounded-franklin-k600-v2_1.jsonl",
+      "grounded-franklin-k600-v2_2.jsonl",
+      "grounded-ncsu-k1250-v2_1.jsonl",
+      "grounded-ncsu-k1250-v2_2.jsonl",
+      "grounded-tudelft-k1000-v2_1.jsonl",
+      "grounded-tudelft-k1000-v2_2.jsonl",
+      "metadata.json",
+      "summary.json"
+    ],
+    "source_format": "per-run-jsonl"
+  },
+  "schema_version": 1
+}

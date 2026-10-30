@@ -13,8 +13,8 @@ Los experimentos no son API pública ni dependencias del paquete.
 
 ## Resultados compactos
 
-Las campañas exploratorias generan muchas más combinaciones que los benchmarks
-oficiales. Por ello, cada directorio de campaña conserva un formato compacto:
+Cada directorio de campaña conserva el mismo formato compacto que los
+benchmarks oficiales:
 
 - `campaign.json` reúne metadatos, sondas de compilación y resumen;
 - `measurements.jsonl` agrupa todas las repeticiones de cada combinación;
@@ -23,8 +23,8 @@ oficiales. Por ello, cada directorio de campaña conserva un formato compacto:
 
 Los evaluadores comprueban que el formato compacto reconstruye exactamente los
 registros originales antes de retirar los archivos redundantes. Esta decisión
-no cambia el formato de `benchmarks/results`, cuyas campañas oficiales son más
-pequeñas y mantienen su estructura histórica mientras siga siendo manejable.
+evita duplicar los índices seleccionados sin perder muestras, metadatos ni
+resultados históricos.
 
 ## Evaluaciones disponibles
 

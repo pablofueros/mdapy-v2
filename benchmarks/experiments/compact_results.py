@@ -1,4 +1,4 @@
-"""Compact verbose experimental campaign results without losing information."""
+"""Compact verbose benchmark campaign results without losing information."""
 
 from __future__ import annotations
 
@@ -134,8 +134,8 @@ def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> None:
     temporary.replace(path)
 
 
-def compact_campaign(directory: Path) -> dict[str, int]:
-    """Replace verbose results in one campaign directory with schema v1."""
+def compact_campaign(directory: Path, *, keep_source: bool = False) -> dict[str, int]:
+    """Compact one verbose campaign into schema v1."""
     paths = _raw_result_paths(directory)
     if not paths:
         raise ValueError(f"No verbose experimental results found in {directory}")
@@ -153,6 +153,17 @@ def compact_campaign(directory: Path) -> dict[str, int]:
     campaign = {
         "schema_version": SCHEMA_VERSION,
         "artifacts": artifacts,
+        "migration": {
+            "source_format": "per-run-jsonl",
+            "source_files": [
+                *(path.name for path in paths),
+                *(
+                    filename
+                    for filename in CAMPAIGN_ARTIFACTS
+                    if (directory / filename).exists()
+                ),
+            ],
+        },
     }
 
     _write_json(directory / "campaign.json", campaign)
@@ -165,12 +176,13 @@ def compact_campaign(directory: Path) -> dict[str, int]:
     if _read_json(directory / "campaign.json") != campaign:
         raise AssertionError("Stored campaign metadata differs from its source")
 
-    for path in paths:
-        path.unlink()
-    for filename in CAMPAIGN_ARTIFACTS:
-        artifact = directory / filename
-        if artifact.exists():
-            artifact.unlink()
+    if not keep_source:
+        for path in paths:
+            path.unlink()
+        for filename in CAMPAIGN_ARTIFACTS:
+            artifact = directory / filename
+            if artifact.exists():
+                artifact.unlink()
     return {
         "measurements": len(measurements),
         "samples": sum(len(records) for records in originals.values()),
@@ -226,6 +238,18 @@ def validate_campaign(directory: Path) -> dict[str, int]:
         source_files.add(source_file)
         sample_count += len(samples)
 
+    raw_paths = _raw_result_paths(directory)
+    if raw_paths:
+        originals = {path.name: _read_jsonl(path) for path in raw_paths}
+        _verify_reconstruction(measurements, validations, originals)
+        artifacts = campaign["artifacts"]
+        for filename in CAMPAIGN_ARTIFACTS:
+            source = directory / filename
+            if source.exists() and artifacts.get(filename) != _read_json(source):
+                raise AssertionError(
+                    f"Compacted artifact differs from its source: {source}"
+                )
+
     return {
         "measurements": len(measurements),
         "samples": sample_count,
@@ -233,14 +257,16 @@ def validate_campaign(directory: Path) -> dict[str, int]:
     }
 
 
-def compact_tree(root: Path) -> dict[str, dict[str, int]]:
+def compact_tree(root: Path, *, keep_source: bool = False) -> dict[str, dict[str, int]]:
     """Compact every verbose campaign below an experiment results directory."""
     directories = sorted({path.parent for path in root.rglob("*.jsonl")})
     compacted = {}
     for directory in directories:
         if not _raw_result_paths(directory):
             continue
-        compacted[str(directory.relative_to(root))] = compact_campaign(directory)
+        compacted[str(directory.relative_to(root))] = compact_campaign(
+            directory, keep_source=keep_source
+        )
     if not compacted:
         raise ValueError(f"No verbose campaigns found below {root}")
     return compacted
@@ -261,6 +287,11 @@ def validate_tree(root: Path) -> dict[str, dict[str, int]]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--keep-source",
+        action="store_true",
+        help="keep verbose source files after validating the compact copy",
+    )
     parser.add_argument("roots", nargs="+", type=Path)
     return parser.parse_args()
 
@@ -273,7 +304,7 @@ def main() -> None:
             validated = validate_tree(resolved)
             print(f"{root}: validated {len(validated)} compact campaigns")
         else:
-            compacted = compact_tree(resolved)
+            compacted = compact_tree(resolved, keep_source=args.keep_source)
             print(f"{root}: compacted {len(compacted)} campaigns")
 
 

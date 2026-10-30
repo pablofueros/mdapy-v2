@@ -4,6 +4,12 @@
 > [`experiments/`](experiments/README.md). Este documento mantiene las mediciones
 > históricas de 2.2 y añade la comparación de las referencias 2.2 y 2.3.
 
+Todas las campañas usan un contrato compacto común: `campaign.json` conserva
+los metadatos y resúmenes, `measurements.jsonl` agrupa las repeticiones y
+`validations.jsonl` guarda cada secuencia de índices una sola vez. Las campañas
+anteriores a 2.3 se migraron mecánicamente y conservan la procedencia de sus
+archivos originales.
+
 ## 2.0 frente a 2.1
 
 Se comparan `v2.0.0` y `v2.1.0`, los últimos parches disponibles de ambas
@@ -41,7 +47,7 @@ Se midieron 5, 10 y 20 selecciones, con cinco procesos independientes por carga
 y un límite de 180 segundos por proceso.
 
 ```bash
-uv run benchmarks/run.py --counts 5 10 20 --runs 5 --timeout 180 \
+uv run python -m benchmarks.run --counts 5 10 20 --runs 5 --timeout 180 \
   --output benchmarks/results/v2_0-v2_1
 ```
 
@@ -124,7 +130,7 @@ beneficio al mover un eje cada vez, no si las cargas representaban usos reales
 completos.
 
 ```bash
-uv run python benchmarks/scale.py --runs 7 --timeout 180 \
+uv run python -m benchmarks.scale --runs 7 --timeout 180 \
   --output benchmarks/results/v2_1-v2_2-scaling
 ```
 
@@ -166,7 +172,7 @@ sobre WSL2 ARM64, con 12 CPU lógicas, Python 3.12.3, NumPy 1.26.0 y SciPy
 el orden de 2.1 y 2.2.
 
 ```bash
-uv run python benchmarks/scale.py --suite grounded --runs 5 --timeout 900 \
+uv run python -m benchmarks.scale --suite grounded --runs 5 --timeout 900 \
   --output benchmarks/results/v2_1-v2_2-grounded
 ```
 
