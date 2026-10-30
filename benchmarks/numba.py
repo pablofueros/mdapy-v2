@@ -1,4 +1,4 @@
-"""Confirm the optional Numba engine through the current public API."""
+"""Compare the preserved NumPy 2.2 and Numba 2.3 references."""
 
 import argparse
 import hashlib
@@ -17,10 +17,10 @@ from time import perf_counter
 from typing import Any, Literal
 
 import numpy as np
-import scipy
+import scipy.stats
 
 from benchmarks.experiments.compact_results import compact_campaign
-from benchmarks.scale import RANDOM_SEED, WORKLOADS, make_columns
+from benchmarks.scale import RANDOM_SEED, WORKLOADS, load_algorithm, make_columns
 
 try:
     import resource
@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parent
 REPOSITORY = ROOT.parent
 type Engine = Literal["numpy", "numba"]
 ENGINES: tuple[Engine, ...] = ("numpy", "numba")
+REFERENCE_BY_ENGINE = {"numpy": "v2_2", "numba": "v2_3"}
 DEFAULT_WORKLOADS = (
     "columns-d1",
     "grounded-datawave-k100",
@@ -38,9 +39,10 @@ DEFAULT_WORKLOADS = (
 )
 COMPILE_PROBES = {
     "float64": "selections-k5",
-    "float32": "dtype-float32",
 }
 SOURCE_PATHS = (
+    REPOSITORY / "benchmarks/algorithms/v2_2.py",
+    REPOSITORY / "benchmarks/algorithms/v2_3.py",
     REPOSITORY / "src/mdapy/api.py",
     REPOSITORY / "src/mdapy/core.py",
     REPOSITORY / "src/mdapy/numba.py",
@@ -67,83 +69,80 @@ def selected_digest(points: np.ndarray) -> str:
     return digest.hexdigest()
 
 
-def public_columns(raw_columns, directional):
-    """Adapt shared benchmark inputs to the public column API."""
-    from mdapy import DataColumn
-
-    directional_set = set(directional)
-    return tuple(
-        DataColumn(column, directional=index in directional_set)
-        for index, column in enumerate(raw_columns)
-    )
-
-
 def validate() -> None:
-    """Require both public engines to reproduce the preserved 2.2 cases."""
+    """Require both references and public engines to reproduce the 2.2 cases."""
     from mdapy import DataColumn, max_diss_alg
 
     cases = json.loads((ROOT / "cases.json").read_text())
+    references = {
+        engine: load_algorithm(reference)
+        for engine, reference in REFERENCE_BY_ENGINE.items()
+    }
     for dtype in (np.float32, np.float64):
         for case in cases:
             directional = set(case["directional"])
+            raw_columns = tuple(
+                np.asarray(column, dtype=dtype) for column in case["columns"]
+            )
             columns = tuple(
                 DataColumn(
-                    np.asarray(column, dtype=dtype),
+                    column,
                     directional=index in directional,
                 )
-                for index, column in enumerate(case["columns"])
+                for index, column in enumerate(raw_columns)
             )
             expected = case["expected"]["v2_2"]
             expected_points = None
             for engine in ENGINES:
-                points, indices = max_diss_alg(
+                reference = references[engine]
+                prepared = reference.prepare(raw_columns, case["directional"])
+                reference_points, reference_indices = reference.select(
+                    prepared,
+                    case["selections"],
+                    case["seed_index"],
+                )
+                public_points, public_indices = max_diss_alg(
                     *columns,
                     n_clusters=case["selections"],
                     seed_index=case["seed_index"],
                     engine=engine,
                 )
-                if indices != expected:
+                if reference_indices != expected or public_indices != expected:
                     raise AssertionError(
                         f"{case['name']}/{dtype.__name__}/{engine}: "
-                        f"indices={indices}, expected={expected}"
+                        f"reference={reference_indices}, public={public_indices}, "
+                        f"expected={expected}"
                     )
+                np.testing.assert_array_equal(reference_points, public_points)
                 if expected_points is None:
-                    expected_points = points
+                    expected_points = reference_points
                 else:
-                    np.testing.assert_array_equal(points, expected_points)
+                    np.testing.assert_array_equal(reference_points, expected_points)
 
 
 def worker(engine: Engine, workload_name: str) -> dict[str, Any]:
-    """Measure two public calls in one isolated process."""
-    started = perf_counter()
-    from mdapy import max_diss_alg
-
-    module_load_s = perf_counter() - started
+    """Measure first-use and repeated calls to one preserved reference."""
     specification = WORKLOADS[workload_name]
     raw_columns, directional, seed_index, data_load_s = make_columns(specification)
-
-    started = perf_counter()
-    columns = public_columns(raw_columns, directional)
-    data_column_s = perf_counter() - started
     selections = int(specification["selections"])
 
+    first_started = perf_counter()
     started = perf_counter()
-    points, indices = max_diss_alg(
-        *columns,
-        n_clusters=selections,
-        seed_index=seed_index,
-        engine=engine,
-    )
-    first_call_s = perf_counter() - started
+    reference = load_algorithm(REFERENCE_BY_ENGINE[engine])
+    module_load_s = perf_counter() - started
 
     started = perf_counter()
-    hot_points, hot_indices = max_diss_alg(
-        *columns,
-        n_clusters=selections,
-        seed_index=seed_index,
-        engine=engine,
-    )
-    hot_call_s = perf_counter() - started
+    prepared = reference.prepare(raw_columns, directional)
+    first_preparation_s = perf_counter() - started
+    points, indices = reference.select(prepared, selections, seed_index)
+    first_call_s = perf_counter() - first_started
+
+    hot_started = perf_counter()
+    started = perf_counter()
+    hot_prepared = reference.prepare(raw_columns, directional)
+    hot_preparation_s = perf_counter() - started
+    hot_points, hot_indices = reference.select(hot_prepared, selections, seed_index)
+    hot_call_s = perf_counter() - hot_started
     if hot_indices != indices:
         raise AssertionError(f"{engine} first and hot calls selected different indices")
     np.testing.assert_array_equal(hot_points, points)
@@ -157,13 +156,15 @@ def worker(engine: Engine, workload_name: str) -> dict[str, Any]:
 
     return {
         "engine": engine,
-        "source": "mdapy.max_diss_alg public API",
+        "reference": REFERENCE_BY_ENGINE[engine],
+        "source": reference.SOURCE,
         "workload": workload_name,
         "rows": len(raw_columns[0]),
         "columns": len(raw_columns),
         "directional": directional,
         "input_dtype": [str(column.dtype) for column in raw_columns],
         "input_mib": sum(column.nbytes for column in raw_columns) / 2**20,
+        "work_dtype": str(getattr(prepared, "calculation_data", prepared.data).dtype),
         "output_dtype": str(points.dtype),
         "random_seed": None if specification.get("dataset") else RANDOM_SEED,
         "seed_index": seed_index,
@@ -172,7 +173,8 @@ def worker(engine: Engine, workload_name: str) -> dict[str, Any]:
         "selected_sha256": selected_digest(points),
         "module_load_s": module_load_s,
         "data_load_s": data_load_s,
-        "data_column_s": data_column_s,
+        "first_preparation_s": first_preparation_s,
+        "hot_preparation_s": hot_preparation_s,
         "first_call_s": first_call_s,
         "hot_call_s": hot_call_s,
         "peak_mib": peak_mib(),
@@ -211,7 +213,7 @@ def run_worker(
 
 
 def compilation_probes(timeout: float, cache_dir: Path) -> dict[str, Any]:
-    """Measure uncached and cached public Numba calls for both input dtypes."""
+    """Measure uncached and cached calls to the float64 Numba 2.3 kernel."""
     probes = {}
     for dtype, workload_name in COMPILE_PROBES.items():
         uncached, uncached_process_s = run_worker(
@@ -245,8 +247,11 @@ def timing_summary(records: list[dict[str, Any]]) -> dict[str, float | None]:
         "module_load_median_s": median(
             float(record["module_load_s"]) for record in records
         ),
-        "data_column_median_s": median(
-            float(record["data_column_s"]) for record in records
+        "first_preparation_median_s": median(
+            float(record["first_preparation_s"]) for record in records
+        ),
+        "hot_preparation_median_s": median(
+            float(record["hot_preparation_s"]) for record in records
         ),
         "first_call_median_s": median(
             float(record["first_call_s"]) for record in records
@@ -279,7 +284,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
             or not isinstance(numpy_hot, float)
             or not isinstance(numba_hot, float)
         ):
-            raise TypeError("Missing public call timing")
+            raise TypeError("Missing reference call timing")
         numpy_peak = entries["numpy"]["peak_median_mib"]
         numba_peak = entries["numba"]["peak_median_mib"]
         workloads[workload_name] = {
@@ -326,7 +331,8 @@ def benchmark(args: argparse.Namespace) -> Path:
         "runs": args.runs,
         "timeout_s": args.timeout,
         "engines": list(ENGINES),
-        "public_api": "mdapy.max_diss_alg",
+        "references": REFERENCE_BY_ENGINE,
+        "public_api_validation": "mdapy.max_diss_alg",
         "sources": {
             str(path.relative_to(REPOSITORY)): sha256(path) for path in SOURCE_PATHS
         },
@@ -334,7 +340,7 @@ def benchmark(args: argparse.Namespace) -> Path:
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
 
     records = []
-    with tempfile.TemporaryDirectory(prefix="mdapy-public-numba-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="mdapy-v2-2-v2-3-") as temporary:
         cache_dir = Path(temporary)
         probes = compilation_probes(args.timeout, cache_dir)
         (output / "compilation.json").write_text(json.dumps(probes, indent=2) + "\n")
@@ -380,7 +386,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workloads", nargs="+", choices=tuple(WORKLOADS))
     parser.add_argument(
         "--output",
-        default=str(ROOT / "results/v2_3-numba-public"),
+        default=str(ROOT / "results/v2_2-v2_3"),
     )
     parser.add_argument("--worker", choices=ENGINES, help=argparse.SUPPRESS)
     parser.add_argument("--workload", choices=WORKLOADS, help=argparse.SUPPRESS)
@@ -398,10 +404,10 @@ def main() -> None:
         print(json.dumps(worker(args.worker, args.workload)))
     elif args.check:
         validate()
-        print("Public NumPy and Numba engines reproduced all mdapy 2.2 cases.")
+        print("References and public engines reproduced all mdapy 2.2 cases.")
     else:
         output = benchmark(args)
-        print(f"Compact public-engine results written to {output}")
+        print(f"Compact reference results written to {output}")
 
 
 if __name__ == "__main__":

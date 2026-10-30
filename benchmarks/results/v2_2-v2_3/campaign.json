@@ -1,0 +1,145 @@
+{
+  "artifacts": {
+    "compilation.json": {
+      "float64": {
+        "cached_first_call_s": 0.2177572259970475,
+        "cached_hot_call_s": 0.010373907003668137,
+        "cached_process_s": 0.6584161740029231,
+        "numba_num_threads": 12,
+        "numba_threading_layer": "omp",
+        "uncached_first_call_s": 1.0377447469945764,
+        "uncached_hot_call_s": 0.00897885400627274,
+        "uncached_process_s": 1.578829650010448,
+        "workload": "selections-k5"
+      }
+    },
+    "metadata.json": {
+      "cpu_count": 12,
+      "created_at": "2026-10-30T13:32:30.783183+00:00",
+      "engines": [
+        "numpy",
+        "numba"
+      ],
+      "llvmlite": "0.50.0",
+      "machine": "aarch64",
+      "numba": "0.68.1",
+      "numba_cpu_name": "generic",
+      "numba_num_threads_env": "12",
+      "numpy": "1.26.0",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+      "public_api_validation": "mdapy.max_diss_alg",
+      "python": "3.12.3",
+      "random_seed": 20261020,
+      "references": {
+        "numba": "v2_3",
+        "numpy": "v2_2"
+      },
+      "runs": 5,
+      "scipy": "1.15.1",
+      "sources": {
+        "benchmarks/algorithms/v2_2.py": "c93ffbabb4aac5042cbc43dfab3c81c04cef76c8506db6b75078adfa4eb3afec",
+        "benchmarks/algorithms/v2_3.py": "bd241f0dbab58d00b2f7aba4319de48ae441ea672283816691a95e0ff4a0b491",
+        "src/mdapy/api.py": "df5ebf40fda2b7f4603c2823570190151f45e5cbbec2cb34b3be6ba7979ede96",
+        "src/mdapy/core.py": "c4fa79bd21f98a7a3dfa7b7b2a466753c35292452b04ebf71ff332b90eb477b7",
+        "src/mdapy/numba.py": "bcb4784c8f917be869b004d40b376f73ef2b075fb20449ecf69b01d5dc8af2d6"
+      },
+      "timeout_s": 900,
+      "workloads": {
+        "columns-d1": {
+          "columns": 1,
+          "rows": 100000,
+          "selections": 20
+        },
+        "grounded-castro-k5000": {
+          "columns": 3,
+          "rows": 121968,
+          "selections": 5000
+        },
+        "grounded-datawave-k100": {
+          "dataset": "datawave",
+          "selections": 100
+        }
+      }
+    },
+    "summary.json": {
+      "workloads": {
+        "columns-d1": {
+          "first_call_saved_s": -0.22018447500886396,
+          "first_call_speedup": 0.02685625042446115,
+          "hot_call_saved_s": -0.00837340799625963,
+          "hot_call_speedup": 0.3591456060828461,
+          "numba": {
+            "first_call_median_s": 0.22626099700573832,
+            "first_preparation_median_s": 0.0008544279990019277,
+            "hot_call_median_s": 0.013066006998997182,
+            "hot_preparation_median_s": 0.0009622219949960709,
+            "module_load_median_s": 0.09916631800297182,
+            "peak_median_mib": 204.69921875,
+            "process_median_s": 0.7401804550027009
+          },
+          "numba_peak_change_percent": 0.1548105959252366,
+          "numpy": {
+            "first_call_median_s": 0.006076521996874362,
+            "first_preparation_median_s": 0.0006183289951877668,
+            "hot_call_median_s": 0.004692599002737552,
+            "hot_preparation_median_s": 0.0003813030052697286,
+            "module_load_median_s": 0.0004512919986154884,
+            "peak_median_mib": 204.3828125,
+            "process_median_s": 0.4155993220047094
+          }
+        },
+        "grounded-castro-k5000": {
+          "first_call_saved_s": 6.229350458001136,
+          "first_call_speedup": 5.366916042348142,
+          "hot_call_saved_s": 6.650840859991149,
+          "hot_call_speedup": 8.042814497075387,
+          "numba": {
+            "first_call_median_s": 1.4264873420033837,
+            "first_preparation_median_s": 0.006562113994732499,
+            "hot_call_median_s": 0.9443441769981291,
+            "hot_preparation_median_s": 0.005530606998945586,
+            "module_load_median_s": 0.10681178499362431,
+            "peak_median_mib": 206.50390625,
+            "process_median_s": 2.8621182380011305
+          },
+          "numba_peak_change_percent": 0.5018915990190331,
+          "numpy": {
+            "first_call_median_s": 7.6558378000045195,
+            "first_preparation_median_s": 0.0024252709990832955,
+            "hot_call_median_s": 7.595185036989278,
+            "hot_preparation_median_s": 0.0031846330093685538,
+            "module_load_median_s": 0.0005201020103413612,
+            "peak_median_mib": 205.47265625,
+            "process_median_s": 15.625414637994254
+          }
+        },
+        "grounded-datawave-k100": {
+          "first_call_saved_s": 0.028355865011690184,
+          "first_call_speedup": 1.0952463028250428,
+          "hot_call_saved_s": 0.20833168001263402,
+          "hot_call_speedup": 4.435758845303628,
+          "numba": {
+            "first_call_median_s": 0.29771092599548865,
+            "first_preparation_median_s": 0.009551233990350738,
+            "hot_call_median_s": 0.06063629299751483,
+            "hot_preparation_median_s": 0.009087265993002802,
+            "module_load_median_s": 0.09794173900445458,
+            "peak_median_mib": 204.80078125,
+            "process_median_s": 0.8309176309994655
+          },
+          "numba_peak_change_percent": 0.04961548002977434,
+          "numpy": {
+            "first_call_median_s": 0.32606679100717884,
+            "first_preparation_median_s": 0.00604354401002638,
+            "hot_call_median_s": 0.26896797301014885,
+            "hot_preparation_median_s": 0.003938371999538504,
+            "module_load_median_s": 0.00037688500015065074,
+            "peak_median_mib": 204.69921875,
+            "process_median_s": 0.9898690429981798
+          }
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}

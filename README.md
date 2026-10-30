@@ -152,20 +152,22 @@ Numba explicitly when a selection already takes seconds or when a large
 workload is repeated. `mdapy` does not switch automatically because the payoff
 depends on the number of rows, variables and selections, as well as the CPU.
 
-The first call for each input dtype compiles or loads a cached specialization;
-later calls reuse that compiled code. `mdapy` also leaves the thread count to
-Numba instead of changing an application's thread configuration.
+The first Numba call compiles or loads its cached `float64` specialization;
+later calls reuse that compiled code for every accepted input dtype. `mdapy`
+also leaves the thread count to Numba instead of changing an application's
+thread configuration.
 
 <p align="center">
   <a href="benchmarks/RESULTS.md">
-    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg" alt="NumPy completes the large selection in 6.45 seconds, compared with 1.72 seconds for the first Numba call with its cache available and 0.85 seconds for a repeated Numba call" width="760">
+    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg" alt="NumPy completes the large selection in 7.66 seconds, compared with 1.43 seconds for the first Numba call with its cache available and 0.94 seconds for a repeated Numba call" width="760">
   </a>
 </p>
 
-The public-API campaign used `float64` inputs, and the first Numba call had its
-disk cache available. Both engines selected exactly the same indices. Numba
-used 5.2% more process memory, so this is a speed optimization rather than a
-memory optimization. Timings are machine-specific; the
+The reference campaign used `float64` inputs, and the first Numba call had its
+disk cache available. Both references and public engines selected exactly the
+same indices. The campaign did not show a meaningful reduction in process
+memory, so this is a speed optimization rather than a memory optimization.
+Timings are machine-specific; the
 [benchmark results](benchmarks/RESULTS.md) contain the complete protocol and
 raw measurements.
 
