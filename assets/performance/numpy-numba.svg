@@ -11,14 +11,6 @@
     .numpy { fill: #8c959f; }
     .numba-first { fill: #57ab5a; }
     .numba-hot { fill: #2da44e; }
-    @media (prefers-color-scheme: dark) {
-      .heading, .value { fill: #f0f6fc; }
-      .label, .note { fill: #8c959f; }
-      .grid { stroke: #30363d; }
-      .numpy { fill: #6e7681; }
-      .numba-first { fill: #56d364; }
-      .numba-hot { fill: #3fb950; }
-    }
   </style>
 
   <text class="heading" x="30" y="36">Seconds saved on a large selection</text>

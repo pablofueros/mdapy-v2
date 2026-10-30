@@ -9,13 +9,6 @@
     .grid { stroke: #d0d7de; }
     .current { fill: #2da44e; }
     .previous { fill: #8c959f; }
-    @media (prefers-color-scheme: dark) {
-      .value { fill: #f0f6fc; }
-      .label, .note { fill: #8c959f; }
-      .grid { stroke: #30363d; }
-      .current { fill: #3fb950; }
-      .previous { fill: #6e7681; }
-    }
   </style>
 
   <text class="label" x="150" y="46" text-anchor="end">mdapy-v2</text>

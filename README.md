@@ -14,8 +14,13 @@
 
 ---
 
-[![mdapy-v2 2.2 completes the benchmark in 0.067 seconds compared with 32.63
-seconds for ihc-mdapy](https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_0-v2_2.svg)](#performance)
+<a href="#performance">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_0-v2_2-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_0-v2_2.svg">
+    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_0-v2_2.svg" alt="mdapy-v2 2.2 completes the benchmark in 0.067 seconds compared with 32.63 seconds for ihc-mdapy" width="720">
+  </picture>
+</a>
 
 </div>
 
@@ -158,7 +163,11 @@ thread configuration.
 
 <p align="center">
   <a href="benchmarks/RESULTS.md">
-    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg" alt="NumPy completes the large selection in 7.66 seconds, compared with 1.43 seconds for the first Numba call with its cache available and 0.94 seconds for a repeated Numba call" width="760">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg">
+      <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/numpy-numba.svg" alt="NumPy completes the large selection in 7.66 seconds, compared with 1.43 seconds for the first Numba call with its cache available and 0.94 seconds for a repeated Numba call" width="760">
+    </picture>
   </a>
 </p>
 
