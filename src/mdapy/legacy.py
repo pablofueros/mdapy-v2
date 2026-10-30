@@ -13,6 +13,7 @@ def max_diss_alg(
     n_clusters: int,
     seed_index: int = 0,
     dir_indices: list[int] | None = None,
+    show_progress: bool = False,
 ) -> tuple[NDArray, list[int]]:
     """Select maximally dissimilar observations using the tuple-based API.
 
@@ -29,6 +30,9 @@ def max_diss_alg(
         Index of the first selected observation, by default 0.
     dir_indices : list[int] or None, optional
         Indices of arrays containing angles in degrees, by default None.
+    show_progress : bool, optional
+        Accepted for backward compatibility and currently ignored, by default
+        False.
 
     Returns
     -------
@@ -54,4 +58,5 @@ def max_diss_alg(
         *columns,
         n_clusters=n_clusters,
         seed_index=seed_index,
+        show_progress=show_progress,
     )

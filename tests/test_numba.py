@@ -61,6 +61,19 @@ def test_numba_matches_numpy_reference_cases(
     np.testing.assert_array_equal(numba_points, numpy_points)
 
 
+def test_numba_accepts_and_ignores_progress_option(capsys):
+    selected, indices = max_diss_alg(
+        DataColumn([0, 1, 2]),
+        n_clusters=2,
+        engine="numba",
+        show_progress=True,
+    )
+
+    assert indices == [0, 2]
+    np.testing.assert_array_equal(selected[:, 0], [0, 2])
+    assert capsys.readouterr().out == ""
+
+
 @pytest.mark.parametrize("dtype", [np.float32, np.float64])
 def test_numba_preserves_nearby_distance_order(dtype):
     columns = (

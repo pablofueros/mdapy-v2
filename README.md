@@ -226,7 +226,8 @@ points, indices = max_diss_alg(
 Passing a tuple to `mdapy.max_diss_alg` raises an error that points to this
 compatibility module. The published `ihc-mdapy==0.1.0` package uses the legacy
 API; its unpublished `v0.1.1` fix remains available in this repository's Git
-history.
+history. Both APIs continue to accept the historical `show_progress` boolean,
+but ignore it because selection engines no longer report progress.
 
 ## Development
 

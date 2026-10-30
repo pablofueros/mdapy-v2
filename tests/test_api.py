@@ -62,12 +62,26 @@ def test_column_api_selects_expected_points_and_is_silent(capsys):
     assert capsys.readouterr().out == ""
 
 
-def test_column_api_rejects_removed_progress_option():
-    with pytest.raises(TypeError, match="show_progress has been removed"):
+@pytest.mark.parametrize("show_progress", [False, True])
+def test_column_api_accepts_and_ignores_progress_option(show_progress, capsys):
+    selected, indices = max_diss_alg(
+        DataColumn([0, 1, 2]),
+        n_clusters=2,
+        show_progress=show_progress,
+    )
+
+    assert indices == [0, 2]
+    np.testing.assert_array_equal(selected[:, 0], [0, 2])
+    assert capsys.readouterr().out == ""
+
+
+@pytest.mark.parametrize("show_progress", [1, None])
+def test_column_api_rejects_non_boolean_progress(show_progress):
+    with pytest.raises(TypeError, match="show_progress must be a bool"):
         max_diss_alg(
             DataColumn([0, 1, 2]),
             n_clusters=2,
-            show_progress=True,
+            show_progress=show_progress,
         )
 
 
