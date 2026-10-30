@@ -9,7 +9,6 @@
 [![Code Quality](https://github.com/pablofueros/mdapy-v2/actions/workflows/code-quality.yml/badge.svg)](https://github.com/pablofueros/mdapy-v2/actions/workflows/code-quality.yml)
 [![Coverage](https://codecov.io/gh/pablofueros/mdapy-v2/graph/badge.svg?branch=main)](https://codecov.io/gh/pablofueros/mdapy-v2)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/mdapy-v2.svg)](https://pypi.org/project/mdapy-v2/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/mdapy-v2.svg)](https://pypi.org/project/mdapy-v2/)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/github/license/pablofueros/mdapy-v2.svg)](https://github.com/pablofueros/mdapy-v2/blob/main/LICENSE)
 
