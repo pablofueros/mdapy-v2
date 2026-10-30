@@ -163,6 +163,12 @@ uv run benchmarks/scale.py
 
 ## Examples
 
+Clone the repository and run any example in the project environment:
+
+```bash
+uv run python examples/1_mda_minimal.py
+```
+
 Start with the [minimal selection](examples/1_mda_minimal.py), a one-dimensional
 case small enough to follow in a debugger. The next example animates how the
 algorithm expands a diverse subset through a two-dimensional sample.
@@ -174,7 +180,7 @@ algorithm expands a diverse subset through a two-dimensional sample.
 </p>
 
 For a focused explanation of circular distances, see the
-[directional variables example](examples/3_mda_directional.py). The final
+[directional variables example](examples/3_mda_directional.py). The fourth
 example applies the algorithm to select representative sea states from 10,000
 directional observations.
 
@@ -184,10 +190,20 @@ directional observations.
   </a>
 </p>
 
-Clone the repository and run any example in the project environment:
+The [Numba example](examples/5_mda_numba.py) compares both engines on a
+deterministic synthetic workload large enough to save seconds. It includes the
+first Numba call and a repeated call, and verifies that both engines select
+exactly the same indices. Its timings illustrate the trade-off on the current
+machine; use the benchmark suite for reproducible measurements.
+
+<p align="center">
+  <a href="benchmarks/RESULTS.md">
+    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_3-numpy-numba.svg" alt="NumPy completes the large selection in 6.45 seconds, compared with 1.72 seconds for the first Numba call with its cache available and 0.85 seconds for a repeated Numba call" width="760">
+  </a>
+</p>
 
 ```bash
-uv run python examples/1_mda_minimal.py
+uv run --extra numba python examples/5_mda_numba.py
 ```
 
 ## Legacy tuple API
