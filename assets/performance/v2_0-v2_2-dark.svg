@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="170" viewBox="0 0 720 170" role="img" aria-labelledby="title description">
+  <title id="title">mdapy-v2 versus ihc-mdapy documented call times</title>
+  <desc id="description">For 20 selections over 140,256 observations, the median call time was 0.067 seconds with mdapy-v2 2.2 and 32.63 seconds with the preserved algorithm from ihc-mdapy. The measurements come from two documented campaigns in the same environment. Lower is better.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .label { fill: #8c959f; font-size: 15px; }
+    .value { fill: #f0f6fc; font-size: 15px; font-weight: 600; }
+    .note { fill: #8c959f; font-size: 13px; }
+    .grid { stroke: #30363d; }
+    .current { fill: #3fb950; }
+    .previous { fill: #6e7681; }
+  </style>
+
+  <text class="label" x="150" y="46" text-anchor="end">mdapy-v2</text>
+  <rect class="current" x="170" y="28" width="4" height="24" rx="2"/>
+  <text class="value" x="184" y="46">0.067 s</text>
+
+  <text class="label" x="150" y="96" text-anchor="end">ihc-mdapy</text>
+  <rect class="previous" x="170" y="78" width="450" height="24" rx="2"/>
+  <text class="value" x="630" y="96">32.63 s</text>
+
+  <line class="grid" x1="170" y1="118" x2="620" y2="118"/>
+  <text class="note" x="170" y="148">Call time · 20 selections · 140,256 observations · median of 5 runs</text>
+</svg>
