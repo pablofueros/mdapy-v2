@@ -87,9 +87,7 @@ points, indices = max_diss_alg(
 
 ### Optional Numba engine
 
-NumPy is the default engine and remains the best starting point for small or
-one-off selections. After installing the `numba` extra, select the compiled
-engine explicitly for larger or repeated workloads:
+After installing the `numba` extra, select the compiled engine explicitly:
 
 ```python
 points, indices = max_diss_alg(
@@ -100,10 +98,8 @@ points, indices = max_diss_alg(
 )
 ```
 
-The first call for each input dtype compiles or loads a cached specialization,
-so it can be slower than NumPy. Later calls reuse the compiled code. The library
-does not choose a thread count: the engine respects Numba's current thread
-configuration.
+NumPy remains the default. See [Numba acceleration](#numba-acceleration) for
+performance guidance.
 
 ## How it works
 
@@ -129,7 +125,9 @@ the exact selected indices before any timing is recorded.
 
 For readability, the chart labels the preserved 2.0 reference as `ihc-mdapy`:
 it uses the same selection algorithm as the latest published `ihc-mdapy`
-release, adapted to the current API. The `mdapy-v2` bar uses the latest and fastest available reference. Both measured the same `datawave` workload in the same software and hardware environment.
+release, adapted to the current API. The `mdapy-v2` bar shows the optimized
+NumPy engine introduced in version 2.2, which remains the default. Both measured
+the same `datawave` workload in the same software and hardware environment.
 
 Version 2.1 replaced repeated subset scans and a growing pair cache with
 incremental minimum distances. In the documented `datawave` experiment with
@@ -144,9 +142,6 @@ to 1.56× while preserving the exact selected indices. The largest measured
 workload saved 7.64 seconds and reduced peak RSS by 12.7%.
 
 Version 2.3 adds the optional Numba engine without changing the NumPy default.
-In the public-API confirmation campaign, Numba was slower for the smallest
-workload but accelerated the repeated heavy workload by 7.48×. Both engines
-produced exactly the same selected indices in every measured run.
 
 See the complete protocol, limitations, and raw measurements in the
 [benchmark results](benchmarks/RESULTS.md).
@@ -159,6 +154,37 @@ recording timings and write their results to a new output directory.
 ```bash
 uv run benchmarks/run.py
 uv run benchmarks/scale.py
+```
+
+## Numba acceleration
+
+NumPy remains the best starting point for small or one-off selections. Choose
+Numba explicitly when a selection already takes seconds or when a large
+workload is repeated. `mdapy` does not switch automatically because the payoff
+depends on the number of rows, variables and selections, as well as the CPU.
+
+The first call for each input dtype compiles or loads a cached specialization;
+later calls reuse that compiled code. `mdapy` also leaves the thread count to
+Numba instead of changing an application's thread configuration.
+
+<p align="center">
+  <a href="benchmarks/RESULTS.md">
+    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_3-numpy-numba.svg" alt="NumPy completes the large selection in 6.45 seconds, compared with 1.72 seconds for the first Numba call with its cache available and 0.85 seconds for a repeated Numba call" width="760">
+  </a>
+</p>
+
+The public-API campaign used `float64` inputs, and the first Numba call had its
+disk cache available. Both engines selected exactly the same indices. Numba
+used 5.2% more process memory, so this is a speed optimization rather than a
+memory optimization. Timings are machine-specific; the
+[benchmark results](benchmarks/RESULTS.md) contain the complete protocol and
+raw measurements.
+
+The [Numba example](examples/5_mda_numba.py) recreates this deterministic
+workload, times both engines and checks their results:
+
+```bash
+uv run --extra numba python examples/5_mda_numba.py
 ```
 
 ## Examples
@@ -189,22 +215,6 @@ directional observations.
     <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/examples/datawave.png" alt="Representative sea states selected from directional wave data" width="750">
   </a>
 </p>
-
-The [Numba example](examples/5_mda_numba.py) compares both engines on a
-deterministic synthetic workload large enough to save seconds. It includes the
-first Numba call and a repeated call, and verifies that both engines select
-exactly the same indices. Its timings illustrate the trade-off on the current
-machine; use the benchmark suite for reproducible measurements.
-
-<p align="center">
-  <a href="benchmarks/RESULTS.md">
-    <img src="https://raw.githubusercontent.com/pablofueros/mdapy-v2/main/assets/performance/v2_3-numpy-numba.svg" alt="NumPy completes the large selection in 6.45 seconds, compared with 1.72 seconds for the first Numba call with its cache available and 0.85 seconds for a repeated Numba call" width="760">
-  </a>
-</p>
-
-```bash
-uv run --extra numba python examples/5_mda_numba.py
-```
 
 ## Legacy tuple API
 
