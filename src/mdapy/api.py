@@ -13,7 +13,8 @@ from scipy.stats import circstd
 class DataColumn:
     """A stable copy of one variable, optionally interpreted as degrees.
 
-    Data and directional interpretation are read-only through the public API,
+    Values must have a real integer or floating-point dtype. Their original
+    dtype and directional interpretation are read-only through the public API,
     so the cached standard deviation remains consistent with the column.
     """
 
@@ -23,6 +24,8 @@ class DataColumn:
             raise TypeError("directional must be a bool")
         if values.ndim != 1:
             raise ValueError("Each data column must be one-dimensional")
+        if values.dtype.kind not in "iuf":
+            raise TypeError("Data columns must have a real numeric dtype")
         if not np.isfinite(values).all():
             raise ValueError("Data columns must contain only finite values")
         self._values = values.copy()
@@ -44,9 +47,10 @@ class DataColumn:
 
     @cached_property
     def standard_deviation(self) -> float:
+        values = self.values.astype(np.float64, copy=False)
         if self.directional:
-            return float(circstd(self.values, high=360, low=0))
-        return float(np.std(self.values))
+            return float(circstd(values, high=360, low=0))
+        return float(np.std(values))
 
 
 _LEGACY_HINT = (
@@ -106,6 +110,11 @@ def max_diss_alg(
         Selected observations in selection order.
     selected_indices : list[int]
         Indices of the selected observations in the original data.
+
+    Notes
+    -----
+    Selection calculations use ``float64``. The returned observations retain
+    the common NumPy dtype of the input columns.
     """
 
     if "show_progress" in kwargs:
@@ -141,11 +150,12 @@ def max_diss_alg(
             raise ValueError(f"Column {index} has zero or undefined deviation")
 
     data = np.column_stack(tuple(col.values for col in columns))
+    calculation_data = data.astype(np.float64, copy=False)
     directional = [i for i, col in enumerate(columns) if col.directional]
 
     select_indices = _get_select_indices(engine)
     indices = select_indices(
-        data,
+        calculation_data,
         deviations,
         directional,
         n_clusters,

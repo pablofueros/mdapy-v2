@@ -134,6 +134,23 @@ def test_column_api_rejects_invalid_columns():
         max_diss_alg(empty, n_clusters=1)
 
 
+@pytest.mark.parametrize(
+    "values",
+    [
+        np.array([False, True]),
+        np.array([0, 1], dtype=np.complex128),
+        np.array(["0", "1"]),
+        np.array([0, 1], dtype=object),
+        np.array(["2026-01-01", "2026-01-02"], dtype="datetime64[D]"),
+        np.array([0, 1], dtype="timedelta64[D]"),
+    ],
+    ids=["bool", "complex", "string", "object", "datetime", "timedelta"],
+)
+def test_column_rejects_non_real_numeric_dtypes(values):
+    with pytest.raises(TypeError, match="real numeric dtype"):
+        DataColumn(values)
+
+
 @pytest.mark.parametrize("directional", [False, True])
 def test_api_rejects_zero_deviation(directional):
     column = DataColumn([1, 1], directional=directional)
@@ -148,3 +165,30 @@ def test_columns_use_numpy_common_dtype():
     selected, _ = max_diss_alg(integers, decimals, n_clusters=2)
 
     assert selected.dtype == np.result_type(integers.values, decimals.values)
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        np.int8,
+        np.int16,
+        np.int32,
+        np.int64,
+        np.uint8,
+        np.uint16,
+        np.uint32,
+        np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
+        np.longdouble,
+    ],
+)
+def test_real_numeric_dtypes_preserve_stored_values(dtype):
+    values = np.array([0, 1, 3], dtype=dtype)
+
+    selected, indices = max_diss_alg(DataColumn(values), n_clusters=3)
+
+    assert indices == [0, 2, 1]
+    assert selected.dtype == values.dtype
+    np.testing.assert_array_equal(selected[:, 0], values[indices])

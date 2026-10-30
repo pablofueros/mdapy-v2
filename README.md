@@ -117,6 +117,14 @@ Distances are Euclidean after normalizing each variable by its standard
 deviation. Directional variables use the shortest angular distance and a
 circular standard deviation. Exact ties preserve input order.
 
+`DataColumn` accepts finite real integer and floating-point arrays. It rejects
+boolean, complex and non-numeric dtypes. Stored values and selected output keep
+their input or common NumPy dtype, while deviations and distances are always
+calculated in `float64` so that both numerical engines follow the same overflow
+and promotion rules. Consequently, integer values beyond the exact precision
+of `float64` and extended-precision floats may lose distinctions during
+selection even though the returned values retain their original dtype.
+
 ## Performance
 
 Benchmarks require exact selected indices before recording timings. The chart
